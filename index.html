@@ -11,20 +11,67 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-800 antialiased">
+<body class="bg-[#F8FAFC] text-slate-900 antialiased min-h-screen flex flex-col">
 
-    <div id="app" class="min-h-screen flex flex-col justify-between">
-        <!-- İçerik JavaScript ile dinamik basılacak -->
+    <!-- 1. ÜST KURUMSAL BAR (HEADER & NAVBAR) -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 px-6 py-4 shadow-sm">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <!-- Logo & Dernek Kimliği -->
+            <div class="flex items-center space-x-3.5">
+                <div class="bg-[#1B4D3E] text-white p-3 rounded-2xl shadow-lg shadow-emerald-950/10">
+                    <i class="fa-solid fa-tree text-xl"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-2xl tracking-tight text-slate-900 block leading-none">RİÇİK KÖYÜ</span>
+                    <span class="text-[11px] text-emerald-700 font-bold tracking-widest uppercase block mt-1">Sosyal Dayanışma Derneği</span>
+                </div>
+            </div>
+            
+            <!-- Sağ Menü: Giriş ve Başvuru Butonları (Çok Belirgin) -->
+            <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
+                <button onclick="openAuthModal('login')" class="flex-1 sm:flex-none px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs tracking-wide transition flex items-center justify-center space-x-1.5 border border-slate-200">
+                    <i class="fa-solid fa-lock text-[10px]"></i> <span>Üye Girişi</span>
+                </button>
+                <button onclick="openAuthModal('register')" class="flex-1 sm:flex-none px-5 py-2.5 bg-[#1B4D3E] hover:bg-emerald-800 text-white font-bold rounded-xl text-xs tracking-wide transition flex items-center justify-center space-x-1.5 shadow-md shadow-emerald-900/10">
+                    <i class="fa-solid fa-user-plus text-[10px]"></i> <span>Yeni Üye Başvurusu</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. ANA PORTAL ALANI (NYSBA STYLE SHOWCASE) -->
+    <main id="app" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+        <!-- Dinamik İçerik Buraya Gelecek -->
+    </main>
+
+    <!-- 3. KORUYUCU FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-10 px-6 border-t border-slate-800 text-xs mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>© 2026 Riçik Köyü Sosyal Dayanışma Derneği. Tüm hakları saklıdır.</p>
+            <div class="flex space-x-6">
+                <a href="https://wa.me/#" target="_blank" class="hover:text-emerald-400 flex items-center space-x-1.5 transition font-semibold"><i class="fa-brands fa-whatsapp text-sm text-emerald-500"></i> <span>Yönetim Masası</span></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 4. DIŞARIDAN AÇILAN MODERN PANEL (AUTH MODAL) -->
+    <div id="auth-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 animate-fadeIn relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full transition w-8 h-8 flex items-center justify-center font-bold">✕</button>
+            <div id="modal-form-content" class="p-6 sm:p-8">
+                <!-- Giriş ya da Kayıt formu js ile buraya basılacak -->
+            </div>
+        </div>
     </div>
 
     <script>
         const API_URL = "https://ricik-backend2.onrender.com/api";
-        let currentScreen = localStorage.getItem('userToken') ? 'dashboard' : 'login';
-        let authTab = 'login'; // 'login' veya 'register' - Sağ paneldeki belirgin menü kontrolü
+        let userToken = localStorage.getItem('userToken');
+        let userRole = localStorage.getItem('userRole');
 
         let pageContent = {
             hero_baslik: "Gurbetten Sılaya, Tek Yürek Bir Arada!",
-            hero_alt_metin: "Riçik Köyü Sosyal Dayanışma Platformu'na hoş geldiniz. Kültürümüzü yaşatmak, bağlarımızı güçlendirmek ve köyümüzün geleceğini birlikte inşa etmek için dijital dünyada buluşuyoruz.",
+            hero_alt_metin: "Kültürümüzü yaşatmak, bağlarımızı güçlendirmek ve köyümüzün geleceğini birlikte inşa etmek için dijital dünyada buluşuyoruz.",
             hero_gorsel_url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
         };
         let newsList = [];
@@ -37,457 +84,188 @@
                 ]);
                 if (contentRes.ok) pageContent = await contentRes.json();
                 if (newsRes.ok) newsList = await newsRes.json();
-            } catch (e) { console.error("Dinamik veriler çekilemedi."); }
-            renderPage();
-        }
-
-        function switchAuthTab(tab) {
-            authTab = tab;
+            } catch (e) { console.error("Veriler çekilemedi."); }
             renderPage();
         }
 
         function renderPage() {
-            const app = document.getElementById('app');
-            const token = localStorage.getItem('userToken');
-            const userRole = localStorage.getItem('userRole');
-
-            if (token) {
+            const main = document.getElementById('app');
+            
+            if (userToken) {
                 if (userRole === 'admin') {
-                    app.innerHTML = getAdminTemplate();
+                    main.innerHTML = getAdminTemplate();
                     loadAdminData();
                 } else {
-                    app.innerHTML = getProfileTemplate();
+                    main.innerHTML = getProfileTemplate();
                 }
                 return;
             }
 
-            app.innerHTML = getMainShowcaseTemplate();
+            main.innerHTML = getPortalHomepageTemplate();
         }
 
         // ==========================================
-        // NYSBA STİLİ ÇİFT BÖLMELİ ANA ŞABLON
+        // NYSBA ANA SAYFA DÜZENİ
         // ==========================================
-        function getMainShowcaseTemplate() {
+        function getPortalHomepageTemplate() {
             return `
-                <div class="flex min-h-screen">
-                    <!-- SOL PANEL: SAMİMİ VİTRİN, CANLI HABERLER VE DUYURULAR -->
-                    <div class="hidden lg:flex lg:w-3/5 relative flex-col justify-between p-12 text-white bg-cover bg-center"
-                         style="background-image: linear-gradient(rgba(20, 54, 44, 0.9), rgba(13, 38, 31, 0.95)), url('${pageContent.hero_gorsel_url}');">
-                        
-                        <!-- Üst Logo Alanı -->
-                        <div class="flex items-center space-x-3 relative z-10">
-                            <div class="bg-emerald-500/20 backdrop-blur-md p-2.5 rounded-xl border border-white/20 text-emerald-400">
-                                <i class="fa-solid fa-tree text-xl"></i>
-                            </div>
-                            <div>
-                                <span class="font-extrabold tracking-wider text-lg block">RİÇİK KÖYÜ</span>
-                                <span class="text-xs text-emerald-400/80 font-medium tracking-widest uppercase">Sosyal Dayanışma Derneği</span>
-                            </div>
-                        </div>
-
-                        <!-- Orta Alan: Dinamik Başlık ve Canlı Haberler (NYSBA Tarzı) -->
-                        <div class="space-y-10 relative z-10 my-auto max-w-2xl">
-                            <div class="space-y-4">
-                                <h1 class="text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-                                    ${pageContent.hero_baslik}
-                                </h1>
-                                <p class="text-base text-slate-300 leading-relaxed font-light">
-                                    ${pageContent.hero_alt_metin}
-                                </p>
-                            </div>
-
-                            <!-- Canlı Haber Bandı -->
-                            <div class="space-y-4">
-                                <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-widest text-emerald-400">
-                                    <span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span></span>
-                                    <span>Dernekten Güncel Gelişmeler & Duyurular</span>
-                                </div>
-                                <div class="grid gap-3">
-                                    ${newsList.length === 0 ? `
-                                        <div class="bg-white/5 border border-white/10 p-4 rounded-xl backdrop-blur-sm text-sm text-slate-400">
-                                            Şu an aktif bir duyuru bulunmuyor.
-                                        </div>
-                                    ` : newsList.slice(0, 2).map(n => `
-                                        <div class="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md hover:bg-white/10 transition group">
-                                            <div class="flex justify-between items-start mb-1">
-                                                <h4 class="font-bold text-slate-100 group-hover:text-emerald-400 transition text-sm">${n.baslik}</h4>
-                                                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full">${n.tarih_format}</span>
-                                            </div>
-                                            <p class="text-xs text-slate-300/90 leading-relaxed line-clamp-2">${n.metin}</p>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Alt Alan: Destek & Bilgi -->
-                        <div class="relative z-10 flex justify-between items-center border-t border-white/10 pt-6 text-xs text-slate-400">
-                            <div>© 2026 Riçik Derneği. Tüm hakları saklıdır.</div>
-                            <a href="https://wa.me/#" target="_blank" class="text-slate-300 hover:text-emerald-400 flex items-center space-x-1.5 transition font-medium">
-                                <i class="fa-brands fa-whatsapp text-sm text-emerald-500"></i> <span>Yönetimle İletişime Geç</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- SAĞ PANEL: BELİRGİN SEKMELİ ÜYE GİRİŞİ & BAŞVURU MENÜSÜ -->
-                    <div class="w-full lg:w-2/5 flex flex-col justify-center items-center px-6 py-12 bg-white shadow-2xl relative z-20">
-                        <div class="w-full max-w-md space-y-8">
-                            
-                            <!-- NYSBA Tarzı Belirgin Menü/Sekme Seçimi -->
-                            <div class="bg-slate-100 p-1.5 rounded-2xl grid grid-cols-2 gap-1 text-center shadow-inner border border-slate-200/50">
-                                <button onclick="switchAuthTab('login')" class="py-3 text-sm font-bold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 ${authTab === 'login' ? 'bg-[#1B4D3E] text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'}">
-                                    <i class="fa-solid fa-user-lock text-xs"></i> <span>Üye Girişi</span>
-                                </button>
-                                <button onclick="switchAuthTab('register')" class="py-3 text-sm font-bold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 ${authTab === 'register' ? 'bg-[#1B4D3E] text-white shadow-md scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'}">
-                                    <i class="fa-solid fa-user-plus text-xs"></i> <span>Yeni Üye Başvurusu</span>
-                                </button>
-                            </div>
-
-                            <!-- Dinamik Form Alanları -->
-                            ${authTab === 'login' ? getLoginFormComponent() : getRegisterFormComponent()}
-
-                        </div>
+                <!-- GÖZ ALICI BÜYÜK KARŞILAMA ALANI (HERO) -->
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl h-[360px] lg:h-[420px] flex items-center p-6 sm:p-12 text-white bg-cover bg-center"
+                     style="background-image: linear-gradient(to right, rgba(15, 43, 35, 0.95), rgba(8, 28, 23, 0.6)), url('${pageContent.hero_gorsel_url}');">
+                    <div class="max-w-2xl space-y-4 relative z-10">
+                        <span class="bg-emerald-500 text-white font-extrabold px-3 py-1 rounded-md text-[10px] tracking-wider uppercase inline-block">YAYINDA</span>
+                        <h2 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">${pageContent.hero_baslik}</h2>
+                        <p class="text-sm sm:text-base text-slate-200/90 leading-relaxed font-light max-w-xl">${pageContent.hero_alt_metin}</p>
                     </div>
                 </div>
-            `;
-        }
 
-        // ==========================================
-        // İÇ FORM BİLEŞENLERİ
-        // ==========================================
-        function getLoginFormComponent() {
-            return `
-                <div class="space-y-6">
-                    <div class="space-y-1">
-                        <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Sisteme Giriş Yapın</h3>
-                        <p class="text-xs text-slate-400 font-medium">Köy ağınıza ve profilinize erişmek için bilgilerinizi girin.</p>
-                    </div>
-
-                    <div id="login-error" class="hidden p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-700 text-sm rounded-r-2xl font-medium shadow-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i><span></span></div>
+                <!-- NYSBA TARZI BÖLMELİ HABER VE HIZLI MENÜ ALANI -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
                     
+                    <!-- SOL/ORTA ALAN: CANLI HABERLER VE GELECEK ETKİNLİKLER (2 SÜTUN) -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                            <h3 class="text-lg font-extrabold text-slate-800 tracking-tight flex items-center space-x-2">
+                                <i class="fa-solid fa-newspaper text-emerald-600"></i>
+                                <span>Dernekten Güncel Gelişmeler & Haberler</span>
+                            </h3>
+                        </div>
+                        
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            ${newsList.length === 0 ? `
+                                <div class="bg-white border border-slate-200 p-6 rounded-2xl text-sm text-slate-400 col-span-2 text-center">Aktif bir haber akışı bulunmuyor.</div>
+                            ` : newsList.map(n => `
+                                <div class="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between group">
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-2.5 py-1 rounded-md border">${n.tarih_format}</span>
+                                        </div>
+                                        <h4 class="font-bold text-slate-900 group-hover:text-emerald-700 transition text-sm leading-snug">${n.baslik}</h4>
+                                        <p class="text-xs text-slate-500 leading-relaxed line-clamp-3">${n.metin}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- SAĞ ALAN: HIZLI ERİŞİM VE DESTEK MERKEZİ (1 SÜTUN) -->
                     <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Telefon Numarası</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-phone text-xs"></i></span>
-                                <input type="text" id="login-phone" placeholder="05xxxxxxxxx" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition text-sm">
+                        <div class="border-b border-slate-200 pb-3">
+                            <h3 class="text-lg font-extrabold text-slate-800 tracking-tight flex items-center space-x-2">
+                                <i class="fa-solid fa-circle-info text-emerald-600"></i>
+                                <span>Üye Bilgilendirme</span>
+                            </h3>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+                            <div class="flex items-start space-x-3 p-3 bg-slate-50 rounded-xl">
+                                <div class="text-emerald-600 mt-0.5"><i class="fa-solid fa-circle-check"></i></div>
+                                <p class="text-xs text-slate-600 leading-relaxed">Kayıt başvurunuzun ardından yönetim soy kütüğü incelemesi yapar ve telefonunuza SMS ile onay bilgisi iletilir.</p>
+                            </div>
+                            <div class="flex items-start space-x-3 p-3 bg-slate-50 rounded-xl">
+                                <div class="text-emerald-600 mt-0.5"><i class="fa-solid fa-shield-cat"></i></div>
+                                <p class="text-xs text-slate-600 leading-relaxed">Şifreniz en üst düzey veri güvenlik protokolleri ile hash'lenerek korunmaktadır.</p>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Şifre</label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-lock text-xs"></i></span>
-                                <input type="password" id="login-pass" placeholder="******" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition text-sm">
-                            </div>
-                        </div>
-                        <button onclick="handleLogin()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white py-3.5 rounded-xl font-bold transition duration-200 shadow-md flex items-center justify-center space-x-2">
-                            <span>Oturum Aç</span><i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function getRegisterFormComponent() {
-            return `
-                <div class="space-y-5">
-                    <div class="space-y-1">
-                        <h3 class="text-2xl font-extrabold tracking-tight text-slate-900">Dernek Kayıt Kütüğü</h3>
-                        <p class="text-xs text-slate-400 font-medium">Başvurunuz yönetim onayından geçtikten sonra aktifleşecektir.</p>
                     </div>
 
-                    <div id="reg-error" class="hidden p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-700 text-sm rounded-r-2xl font-medium shadow-sm"><i class="fa-solid fa-circle-exclamation mr-2"></i><span></span></div>
-                    <div id="reg-success" class="hidden p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700 text-sm rounded-r-2xl font-medium shadow-sm"><i class="fa-solid fa-circle-check mr-2"></i><span></span></div>
-
-                    <div id="register-form" class="space-y-3.5">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Adınız</label>
-                                <input type="text" id="reg-ad" placeholder="Ahmet" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-xs transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Soyadınız</label>
-                                <input type="text" id="reg-soyad" placeholder="Yılmaz" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-xs transition">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Baba Adı</label>
-                                <input type="text" id="reg-baba" placeholder="Mehmet" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-xs transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Anne Adı</label>
-                                <input type="text" id="reg-anne" placeholder="Ayşe" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-xs transition">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Doğum Tarihi</label>
-                            <input type="date" id="reg-dogum" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-xs transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Telefon Numarası</label>
-                            <input type="text" id="reg-phone" placeholder="05xxxxxxxxx" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-xs transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Şifre Belirleyin</label>
-                            <input type="password" id="reg-pass" placeholder="******" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-xs transition">
-                        </div>
-                        <button onclick="handleRegister()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white py-3 rounded-xl font-bold transition duration-200 shadow-md flex items-center justify-center space-x-2 text-xs">
-                            <span>Başvuruyu Gönder</span><i class="fa-solid fa-paper-plane text-xs"></i>
-                        </button>
-                    </div>
                 </div>
             `;
         }
 
         // ==========================================
-        // ADMİN PANEL ŞABLONLARI VE DİĞER FONKSİYONLAR AYNI KALIYOR
+        // MODAL / FORM YÖNETİMİ
         // ==========================================
-        let activeAdminTab = 'applications';
-
-        function setAdminTab(tab) {
-            activeAdminTab = tab;
-            const container = document.getElementById('admin-content-area');
-            if (tab === 'content_management') {
-                container.innerHTML = getContentManagementForm();
+        function openAuthModal(type) {
+            const modal = document.getElementById('auth-modal');
+            const content = document.getElementById('modal-form-content');
+            modal.classList.remove('hidden');
+            
+            if (type === 'login') {
+                content.innerHTML = `
+                    <div class="space-y-5">
+                        <div class="text-center">
+                            <h3 class="text-xl font-extrabold text-slate-900">Üye Giriş Ekranı</h3>
+                            <p class="text-xs text-slate-400 mt-1">Lütfen derneğe kayıtlı telefon numaranızı girin.</p>
+                        </div>
+                        <div id="login-error" class="hidden p-3 bg-rose-50 text-rose-700 text-xs rounded-xl font-medium"><span></span></div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Telefon Numarası</label>
+                                <input type="text" id="login-phone" placeholder="05xxxxxxxxx" class="w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1B4D3E] text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Şifre</label>
+                                <input type="password" id="login-pass" placeholder="******" class="w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1B4D3E] text-sm">
+                            </div>
+                            <button onclick="handleLogin()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white py-3 rounded-xl font-bold text-xs tracking-wider transition uppercase">Giriş Yap</button>
+                        </div>
+                    </div>
+                `;
             } else {
-                container.innerHTML = getApplicationsTableTemplate();
-                loadAdminData();
+                content.innerHTML = `
+                    <div class="space-y-4 overflow-y-auto max-h-[80vh]">
+                        <div class="text-center">
+                            <h3 class="text-xl font-extrabold text-slate-900">Yeni Üye Başvuru Formu</h3>
+                            <p class="text-xs text-slate-400 mt-1">Köy kütüğüne kayıt için bilgileri girin.</p>
+                        </div>
+                        <div id="reg-error" class="hidden p-3 bg-rose-50 text-rose-700 text-xs rounded-xl font-medium"><span></span></div>
+                        <div id="reg-success" class="hidden p-3 bg-emerald-50 text-emerald-700 text-xs rounded-xl font-medium"><span></span></div>
+                        <div id="register-form" class="space-y-3">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="reg-ad" placeholder="Adınız" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+                                <input type="text" id="reg-soyad" placeholder="Soyadınız" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="reg-baba" placeholder="Baba Adı" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+                                <input type="text" id="reg-anne" placeholder="Anne Adı" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+                            </div>
+                            <input type="date" id="reg-dogum" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+                            <input type="text" id="reg-phone" placeholder="Telefon (05xxxxxxxxx)" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+                            <input type="password" id="reg-pass" placeholder="Güvenli Şifre" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs">
+                            <button onclick="handleRegister()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white py-3 rounded-xl font-bold text-xs tracking-wider transition uppercase">Başvuruyu Tamamla</button>
+                        </div>
+                    </div>
+                `;
             }
         }
 
-        function getAdminTemplate() {
-            return `
-                <div class="flex min-h-screen bg-slate-50">
-                    <div class="w-64 bg-[#1B4D3E] text-white p-6 flex flex-col justify-between shadow-xl relative z-20">
-                        <div class="space-y-6">
-                            <div class="flex items-center space-x-2 border-b border-emerald-700 pb-4">
-                                <i class="fa-solid fa-shield-halved text-emerald-400 text-xl"></i>
-                                <h1 class="text-xl font-bold tracking-wide">Riçik Yönetim</h1>
-                            </div>
-                            <nav class="space-y-2">
-                                <button onclick="setAdminTab('applications')" class="w-full flex items-center space-x-3 py-2.5 px-4 rounded-xl font-semibold transition hover:bg-emerald-800 text-left">
-                                    <i class="fa-solid fa-clipboard-check"></i> <span>Başvuru Havuzu</span>
-                                </button>
-                                <button onclick="setAdminTab('content_management')" class="w-full flex items-center space-x-3 py-2.5 px-4 rounded-xl font-semibold transition hover:bg-emerald-800 text-left">
-                                    <i class="fa-solid fa-pen-to-square"></i> <span>Vitrin Ayarları</span>
-                                </button>
-                            </nav>
-                        </div>
-                        <button onclick="handleLogout()" class="w-full bg-rose-950 hover:bg-rose-900 text-rose-200 py-3 px-4 rounded-xl font-semibold flex items-center justify-between transition shadow">
-                            <span>Oturumu Kapat</span><i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
-                        </button>
-                    </div>
-                    <div class="flex-1 p-8 overflow-y-auto" id="admin-content-area">
-                        ${getApplicationsTableTemplate()}
-                    </div>
-                </div>
-            `;
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
         }
 
-        function getApplicationsTableTemplate() {
-            return `
-                <div class="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
-                    <div>
-                        <h2 class="text-3xl font-bold text-slate-800">Üyelik Başvuruları</h2>
-                        <p class="text-sm text-slate-500 font-medium">Onay sırasındaki köylülerimizin başvuru listesi.</p>
-                    </div>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100">
-                            <tr>
-                                <th class="p-4">Ad Soyad</th>
-                                <th class="p-4">Soy Ağacı (Anne/Baba)</th>
-                                <th class="p-4">İletişim Numarası</th>
-                                <th class="p-4 text-right">Aksiyon</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-table-body" class="text-sm divide-y divide-slate-100">
-                            <tr><td colspan="4" class="p-6 text-center text-slate-400 font-medium"><i class="fa-solid fa-spinner animate-spin mr-2"></i> Başvurular güncelleniyor...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        function getContentManagementForm() {
-            return `
-                <div class="mb-8 border-b border-slate-200 pb-4">
-                    <h2 class="text-3xl font-bold text-slate-800">Giriş Sayfası Vitrin Yönetimi</h2>
-                    <p class="text-sm text-slate-500 font-medium">Ana sayfadaki vitrin yazılarını ve arka plan görselini buradan değiştirebilirsiniz.</p>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-2xl space-y-5">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-1.5">Ana Başlık</label>
-                        <input type="text" id="edit-hero-title" value="${pageContent.hero_baslik}" class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-1.5">Açıklama / Alt Metin</label>
-                        <textarea id="edit-hero-text" rows="4" class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600">${pageContent.hero_alt_metin}</textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-1.5">Arka Plan Görsel Linki (URL)</label>
-                        <input type="text" id="edit-hero-img" value="${pageContent.hero_gorsel_url}" class="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600">
-                    </div>
-                    <button onclick="updatePageContent()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl text-sm shadow transition flex items-center space-x-2">
-                        <i class="fa-solid fa-floppy-disk"></i> <span>Değişiklikleri Kaydet ve Yayınla</span>
-                    </button>
-                </div>
-            `;
-        }
-
-        function getProfileTemplate() {
-            return `
-                <div class="max-w-xl mx-auto my-16 bg-white p-8 rounded-2xl shadow-xl border border-slate-100 text-center space-y-6">
-                    <div class="w-20 h-20 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-4xl shadow-inner animate-bounce"><i class="fa-solid fa-circle-check"></i></div>
-                    <div class="space-y-2">
-                        <h2 class="text-3xl font-bold text-slate-800">Sisteme Hoş Geldiniz!</h2>
-                        <p class="text-sm text-slate-500 max-w-sm mx-auto">Köylü onay profiliniz aktiftir. Çok yakında harita ve interaktif sohbet alanı bu ekran üzerinden hizmete açılacaktır.</p>
-                    </div>
-                    <div class="pt-4 border-t border-slate-100">
-                        <button onclick="handleLogout()" class="bg-slate-800 hover:bg-slate-900 text-white px-8 py-3 rounded-xl font-bold text-sm transition shadow-md hover:shadow-lg flex items-center justify-center space-x-2 mx-auto">
-                            <span>Güvenli Çıkış Yap</span><i class="fa-solid fa-power-off text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
+        // BACKEND VE VERİ BAĞLANTILARI BURADAN DEVAM EDİYOR
         async function handleLogin() {
             const telefon = document.getElementById('login-phone').value.trim();
             const sifre = document.getElementById('login-pass').value.trim();
             const errorDiv = document.getElementById('login-error');
-
-            if(!telefon || !sifre) {
-                showBoxError(errorDiv, "Lütfen tüm alanları doldurun.");
-                return;
-            }
-
             try {
-                const res = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    mode: 'cors',
-                    body: JSON.stringify({ telefon, sifre })
-                });
+                const res = await fetch(`${API_URL}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ telefon, sifre }) });
                 const data = await res.json();
-                if (res.ok) {
-                    localStorage.setItem('userToken', data.token);
-                    localStorage.setItem('userRole', data.user.rol);
-                    errorDiv.classList.add('hidden');
-                    navigateTo('dashboard');
-                } else {
-                    showBoxError(errorDiv, data.message || "Giriş bilgileri geçersiz.");
-                }
-            } catch (err) { showBoxError(errorDiv, "Canlı sunucuya erişim sağlanamadı."); }
+                if (res.ok) { localStorage.setItem('userToken', data.token); localStorage.setItem('userRole', data.user.rol); userToken = data.token; userRole = data.user.rol; closeAuthModal(); renderPage(); } 
+                else { showBoxError(errorDiv, data.message); }
+            } catch (err) { showBoxError(errorDiv, "Bağlantı hatası."); }
         }
 
         async function handleRegister() {
-            const ad = document.getElementById('reg-ad').value.trim();
-            const soyad = document.getElementById('reg-soyad').value.trim();
-            const baba_adi = document.getElementById('reg-baba').value.trim();
-            const anne_adi = document.getElementById('reg-anne').value.trim();
-            const dogum_tarihi = document.getElementById('reg-dogum').value;
-            const telefon = document.getElementById('reg-phone').value.trim();
-            const sifre = document.getElementById('reg-pass').value.trim();
-            const errorDiv = document.getElementById('reg-error');
-            const successDiv = document.getElementById('reg-success');
-
-            if(!ad || !soyad || !baba_adi || !anne_adi || !dogum_tarihi || !telefon || !sifre) {
-                showBoxError(errorDiv, "Lütfen başvuru formundaki tüm alanları doldurun.");
-                return;
-            }
-
+            const ad = document.getElementById('reg-ad').value.trim(); const soyad = document.getElementById('reg-soyad').value.trim(); const baba_adi = document.getElementById('reg-baba').value.trim(); const anne_adi = document.getElementById('reg-anne').value.trim(); const dogum_tarihi = document.getElementById('reg-dogum').value; const telefon = document.getElementById('reg-phone').value.trim(); const sifre = document.getElementById('reg-pass').value.trim();
+            const errorDiv = document.getElementById('reg-error'); const successDiv = document.getElementById('reg-success');
             try {
-                const res = await fetch(`${API_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    mode: 'cors',
-                    body: JSON.stringify({ ad, soyad, baba_adi, anne_adi, dogum_tarihi, telefon, sifre })
-                });
+                const res = await fetch(`${API_URL}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ad, soyad, baba_adi, anne_adi, dogum_tarihi, telefon, sifre }) });
                 const data = await res.json();
-                if(res.ok) {
-                    errorDiv.classList.add('hidden');
-                    successDiv.querySelector('span').innerText = data.message || "Başvurunuz başarıyla havuzu iletildi!";
-                    successDiv.classList.remove('hidden');
-                    document.getElementById('register-form').classList.add('hidden');
-                    setTimeout(() => { switchAuthTab('login'); }, 4000);
-                } else { showBoxError(errorDiv, data.message || "Kayıt formu iletilemedi."); }
-            } catch (err) { showBoxError(errorDiv, "Sunucuya bağlanılamadı."); }
+                if(res.ok) { errorDiv.classList.add('hidden'); successDiv.querySelector('span').innerText = data.message; successDiv.classList.remove('hidden'); document.getElementById('register-form').classList.add('hidden'); setTimeout(() => { closeAuthModal(); }, 3000); } 
+                else { showBoxError(errorDiv, data.message); }
+            } catch (err) { showBoxError(errorDiv, "Hata oluştu."); }
         }
 
-        async function loadAdminData() {
-            const token = localStorage.getItem('userToken');
-            try {
-                const res = await fetch(`${API_URL}/admin/users?durum=onay_bekliyor`, {
-                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-                });
-                const data = await res.json();
-                const tbody = document.getElementById('admin-table-body');
-                if (!res.ok || data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 font-medium"><i class="fa-solid fa-folder-open mr-2 text-lg"></i> Havuzda onay bekleyen yeni başvuru bulunmuyor.</td></tr>`;
-                    return;
-                }
-                tbody.innerHTML = data.map(u => `
-                    <tr class="hover:bg-slate-50/70 transition">
-                        <td class="p-4 font-bold text-slate-700">${u.ad} ${u.soyad}</td>
-                        <td class="p-4 text-slate-600 font-medium"><span class="bg-slate-100 px-2 py-1 rounded text-xs">A: ${u.anne_adi}</span> <span class="bg-slate-100 px-2 py-1 rounded text-xs">B: ${u.baba_adi}</span></td>
-                        <td class="p-4 text-slate-600 font-mono font-medium">${u.telefon}</td>
-                        <td class="p-4 text-right">
-                            <button onclick="approveUser(${u.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm hover:shadow transition flex items-center space-x-1 inline-flex">
-                                <i class="fa-solid fa-user-check"></i> <span>Onayla</span>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (e) { if(document.getElementById('admin-table-body')) document.getElementById('admin-table-body').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-rose-500 font-bold">Veriler çekilirken hata oluştu.</td></tr>`; }
-        }
+        function showBoxError(divElement, text) { divElement.querySelector('span').innerText = text; divElement.classList.remove('hidden'); }
+        function handleLogout() { localStorage.clear(); userToken = null; userRole = null; renderPage(); }
+        
+        // ADMIN PANEL TASLAK YAPILARI
+        function getAdminTemplate() { return `<div class="bg-white p-6 rounded-2xl border"><h2 class="text-xl font-bold mb-4">Admin Onay Paneli</h2><p class="text-sm text-slate-500 mb-4">Başvurular havuzda listelenmektedir.</p><div id="admin-table-body" class="space-y-2">Yükleniyor...</div><button onclick="handleLogout()" class="mt-4 bg-rose-900 text-white px-4 py-2 rounded-xl text-xs font-bold">Çıkış</button></div>`; }
+        async function loadAdminData() { const token = localStorage.getItem('userToken'); try { const res = await fetch(`${API_URL}/admin/users?durum=onay_bekliyor`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); const container = document.getElementById('admin-table-body'); if(data.length===0){ container.innerHTML="Bekleyen başvuru yok."; return; } container.innerHTML = data.map(u => `<div class="p-3 bg-slate-50 rounded-xl flex justify-between items-center text-xs font-medium"><span>${u.ad} ${u.soyad} (${u.telefon})</span><button onclick="approveUser(${u.id})" class="bg-emerald-600 text-white px-3 py-1 rounded-lg">Onayla</button></div>`).join(''); } catch(e){} }
+        async function approveUser(id) { const token = localStorage.getItem('userToken'); try { const res = await fetch(`${API_URL}/admin/users/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ yeniDurum: 'aktif' }) }); if(res.ok) loadAdminData(); } catch(e){} }
+        function getProfileTemplate() { return `<div class="bg-white p-6 rounded-2xl border text-center space-y-3"><h2 class="text-lg font-bold">Giriş Başarılı!</h2><p class="text-xs text-slate-500">Profiliniz aktif durumdadır.</p><button onclick="handleLogout()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs">Çıkış Yap</button></div>`; }
 
-        async function approveUser(id) {
-            const token = localStorage.getItem('userToken');
-            if(!confirm("Bu kullanıcının dernek üyeliğini onaylıyor musunuz?")) return;
-            try {
-                const res = await fetch(`${API_URL}/admin/users/${id}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ yeniDurum: 'aktif' })
-                });
-                if(res.ok) loadAdminData();
-            } catch(e) { alert("Sistem hatası."); }
-        }
-
-        async function updatePageContent() {
-            const token = localStorage.getItem('userToken');
-            const hero_baslik = document.getElementById('edit-hero-title').value.trim();
-            const hero_alt_metin = document.getElementById('edit-hero-text').value.trim();
-            const hero_gorsel_url = document.getElementById('edit-hero-img').value.trim();
-            try {
-                const res = await fetch(`${API_URL}/admin/content`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ hero_baslik, hero_alt_metin, hero_gorsel_url })
-                });
-                if (res.ok) {
-                    alert("Giriş sayfası başarıyla güncellendi!");
-                    pageContent = { hero_baslik, hero_alt_metin, hero_gorsel_url };
-                }
-            } catch (e) { alert("Hata oluştu."); }
-        }
-
-        function showBoxError(divElement, text) {
-            divElement.querySelector('span').innerText = text;
-            divElement.classList.remove('hidden');
-        }
-
-        function handleLogout() {
-            localStorage.clear();
-            currentScreen = 'login';
-            authTab = 'login';
-            renderPage();
-        }
-
-        // Açılış tetikleyicisi
         initPage();
     </script>
 </body>
