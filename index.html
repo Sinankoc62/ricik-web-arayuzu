@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riçik Köyü Derneği</title>
+    <title>Riçik Köyü Sosyal Dayanışma Derneği</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
 
     <div id="app" class="min-h-screen flex flex-col justify-between">
         </div>
 
     <script>
         const API_URL = "https://ricik-backend2.onrender.com/api";
-        
-        // Aktif ekranı takip etmek için durum değişkeni ('login', 'register', 'dashboard')
         let currentScreen = localStorage.getItem('userToken') ? 'dashboard' : 'login';
 
         function navigateTo(screen) {
@@ -22,7 +21,6 @@
             renderPage();
         }
 
-        // Ekranları Yöneten Dinamik Router
         function renderPage() {
             const app = document.getElementById('app');
             const token = localStorage.getItem('userToken');
@@ -38,7 +36,6 @@
                 return;
             }
 
-            // Giriş ve Kayıt ekranları arası geçiş kontrolü
             if (currentScreen === 'register') {
                 app.innerHTML = getRegisterTemplate();
             } else {
@@ -47,30 +44,93 @@
         }
 
         // ==========================================
+        // GÖRSEL SOL PANEL ŞABLONU (ORTAK ALAN)
+        // ==========================================
+        function getLeftHeroTemplate() {
+            return `
+                <div class="hidden lg:flex lg:w-1/2 bg-cover bg-center relative items-center p-12 text-white" 
+                     style="background-image: linear-gradient(rgba(27, 77, 62, 0.85), rgba(20, 54, 44, 0.95)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
+                    <div class="absolute top-8 left-8 flex items-center space-x-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+                        <i class="fa-solid fa-tree text-emerald-400 text-lg"></i>
+                        <span class="font-bold tracking-wider text-sm">RİÇİK DERNEĞİ</span>
+                    </div>
+                    <div class="max-w-xl space-y-8 relative z-10">
+                        <div class="space-y-4">
+                            <h1 class="text-5xl font-extrabold tracking-tight leading-tight">
+                                Gurbetten Sılaya, <br><span class="text-emerald-400">Tek Yürek</span> Bir Arada!
+                            </h1>
+                            <p class="text-lg text-slate-200/90 leading-relaxed font-light">
+                                Riçik Köyü Sosyal Dayanışma Platformu'na hoş geldiniz. Kültürümüzü yaşatmak, bağlarımızı güçlendirmek ve köyümüzün geleceğini birlikte inşa etmek için dijital dünyada buluşuyoruz.
+                            </p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-6 pt-6 border-t border-white/10 text-sm">
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-white/10 p-2.5 rounded-lg border border-white/10 text-emerald-400"><i class="fa-solid fa-map-location-dot text-lg"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-100">İnteraktif Harita</h4>
+                                    <p class="text-xs text-slate-300">Köylülerimizin dünyadaki dağılımını canlı izleyin.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-white/10 p-2.5 rounded-lg border border-white/10 text-emerald-400"><i class="fa-solid fa-comments text-lg"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-100">Anlık Mesajlaşma</h4>
+                                    <p class="text-xs text-slate-300">Kendi aramızda güvenli ve hızlı sohbet edin.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-6 left-8 text-xs text-slate-400 font-light">
+                        &copy; 2026 Riçik Köyü Derneği Bilgi İşlem. Tüm Hakları Saklıdır.
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==========================================
         // EKRAN ŞABLONLARI (TEMPLATES)
         // ==========================================
 
         function getLoginTemplate() {
             return `
-                <div class="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-                    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
-                        <h2 class="text-2xl font-bold text-center text-[#1B4D3E] mb-6">Riçik Derneği Üye Girişi</h2>
-                        <div id="login-error" class="hidden p-3 bg-red-100 text-red-700 text-sm rounded-lg mb-4 font-medium"></div>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600">Telefon Numarası</label>
-                                <input type="text" id="login-phone" placeholder="05xxxxxxxxx" class="w-full mt-1 p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                <div class="flex min-h-screen bg-slate-100">
+                    ${getLeftHeroTemplate()}
+                    <div class="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-12 bg-white">
+                        <div class="w-full max-w-md space-y-8">
+                            <div class="text-center lg:text-left space-y-2">
+                                <div class="lg:hidden inline-flex bg-emerald-100 p-3 rounded-2xl text-[#1B4D3E] mb-2"><i class="fa-solid fa-tree text-2xl"></i></div>
+                                <h2 class="text-3xl font-bold tracking-tight text-slate-900">Yuvaya Giriş Yapın</h2>
+                                <p class="text-sm text-slate-500 font-medium">Hesabınıza erişmek için bilgilerinizi girin.</p>
                             </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-600">Şifre</label>
-                                <input type="password" id="login-pass" placeholder="******" class="w-full mt-1 p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
+
+                            <div id="login-error" class="hidden p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-700 text-sm rounded-r-xl font-medium shadow-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i><span></span></div>
+                            
+                            <div class="space-y-5">
+                                <div class="relative">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Telefon Numarası</label>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-phone text-sm"></i></span>
+                                        <input type="text" id="login-phone" placeholder="05xxxxxxxxx" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition text-slate-800">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Şifre</label>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-lock text-sm"></i></span>
+                                        <input type="password" id="login-pass" placeholder="******" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white transition text-slate-800">
+                                    </div>
+                                </div>
+                                <button onclick="handleLogin()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white py-3.5 rounded-xl font-bold transition duration-200 shadow-md hover:shadow-lg flex items-center justify-center space-x-2">
+                                    <span>Sisteme Giriş Yap</span><i class="fa-solid fa-arrow-right-to-bracket text-sm"></i>
+                                </button>
                             </div>
-                            <button onclick="handleLogin()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white p-2.5 rounded-lg font-bold transition duration-200 shadow">Giriş Yap</button>
-                        </div>
-                        <div class="text-center mt-4">
-                            <p class="text-sm text-gray-600">Henüz üye değil misiniz? 
-                                <a href="#" onclick="navigateTo('register')" class="text-emerald-700 font-bold hover:underline">Yeni Başvuru Yap</a>
-                            </p>
+                            
+                            <div class="text-center pt-4 border-t border-slate-100">
+                                <p class="text-sm text-slate-600 font-medium">Köy kütüğüne henüz kayıtlı değil misiniz?<br>
+                                    <a href="#" onclick="navigateTo('register')" class="text-emerald-700 font-bold hover:text-emerald-800 hover:underline inline-flex items-center mt-2 bg-emerald-50 px-4 py-2 rounded-full transition">Yeni Başvuru Oluştur <i class="fa-solid fa-user-plus ml-2 text-xs"></i></a>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -79,53 +139,60 @@
 
         function getRegisterTemplate() {
             return `
-                <div class="flex items-center justify-center min-h-screen bg-gray-100 px-4 py-8">
-                    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
-                        <h2 class="text-2xl font-bold text-center text-[#1B4D3E] mb-2">Yeni Üyelik Başvurusu</h2>
-                        <p class="text-xs text-gray-500 text-center mb-6">Lütfen bilgilerinizi eksiksiz doldurun. Başvurunuz yönetim onayına düşecektir.</p>
-                        
-                        <div id="reg-error" class="hidden p-3 bg-red-100 text-red-700 text-sm rounded-lg mb-4 font-medium"></div>
-                        <div id="reg-success" class="hidden p-3 bg-green-100 text-green-700 text-sm rounded-lg mb-4 font-medium"></div>
+                <div class="flex min-h-screen bg-slate-100">
+                    ${getLeftHeroTemplate()}
+                    <div class="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-8 bg-white overflow-y-auto">
+                        <div class="w-full max-w-md space-y-6">
+                            <div class="text-center lg:text-left space-y-1">
+                                <h2 class="text-3xl font-bold tracking-tight text-slate-900">Ailemize Katılın</h2>
+                                <p class="text-sm text-slate-500 font-medium">Bilgileriniz yönetim havuzunda güvenle doğrulanacaktır.</p>
+                            </div>
+                            
+                            <div id="reg-error" class="hidden p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-700 text-sm rounded-r-xl font-medium shadow-sm"><i class="fa-solid fa-circle-exclamation mr-2"></i><span></span></div>
+                            <div id="reg-success" class="hidden p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-700 text-sm rounded-r-xl font-medium shadow-sm"><i class="fa-solid fa-circle-check mr-2"></i><span></span></div>
 
-                        <div id="register-form" class="space-y-4">
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-600">Adınız</label>
-                                    <input type="text" id="reg-ad" placeholder="Ahmet" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                            <div id="register-form" class="space-y-4">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Adınız</label>
+                                        <input type="text" id="reg-ad" placeholder="Ahmet" class="w-full mt-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-sm transition">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Soyadınız</label>
+                                        <input type="text" id="reg-soyad" placeholder="Yılmaz" class="w-full mt-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-sm transition">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Baba Adı</label>
+                                        <input type="text" id="reg-baba" placeholder="Mehmet" class="w-full mt-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-sm transition">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Anne Adı</label>
+                                        <input type="text" id="reg-anne" placeholder="Ayşe" class="w-full mt-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-sm transition">
+                                    </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-600">Soyadınız</label>
-                                    <input type="text" id="reg-soyad" placeholder="Yılmaz" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-600">Baba Adı</label>
-                                    <input type="text" id="reg-baba" placeholder="Mehmet" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Doğum Tarihi</label>
+                                    <input type="date" id="reg-dogum" class="w-full mt-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-sm transition">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-600">Anne Adı</label>
-                                    <input type="text" id="reg-anne" placeholder="Ayşe" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Telefon Numarası</label>
+                                    <input type="text" id="reg-phone" placeholder="05xxxxxxxxx" class="w-full mt-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-sm transition">
                                 </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Güvenli Şifre</label>
+                                    <input type="password" id="reg-pass" placeholder="******" class="w-full mt-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:bg-white text-sm transition">
+                                </div>
+                                <button onclick="handleRegister()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white py-3 rounded-xl font-bold transition duration-200 shadow-md flex items-center justify-center space-x-2 text-sm">
+                                    <span>Kaydı Tamamla ve Başvur</span><i class="fa-solid fa-paper-plane text-xs"></i>
+                                </button>
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600">Doğum Tarihi</label>
-                                <input type="date" id="reg-dogum" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                            <div class="text-center mt-4 border-t border-slate-100 pt-3">
+                                <p class="text-sm text-slate-600 font-medium">Zaten bir hesabınız var mı?<br>
+                                    <a href="#" onclick="navigateTo('login')" class="text-emerald-700 font-bold hover:underline inline-flex items-center mt-1"><i class="fa-solid fa-chevron-left text-xs mr-1.5"></i> Giriş Ekranına Dön</a>
+                                </p>
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600">Telefon Numarası</label>
-                                <input type="text" id="reg-phone" placeholder="05xxxxxxxxx" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-600">Şifre Belirleyin</label>
-                                <input type="password" id="reg-pass" placeholder="******" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
-                            </div>
-                            <button onclick="handleRegister()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white p-2.5 rounded-lg font-bold transition duration-200 shadow text-sm">Başvuruyu Tamamla</button>
-                        </div>
-                        <div class="text-center mt-4 border-t border-gray-100 pt-3">
-                            <p class="text-sm text-gray-600">Zaten başvurunuz var mı? 
-                                <a href="#" onclick="navigateTo('login')" class="text-emerald-700 font-bold hover:underline">Giriş Ekranına Dön</a>
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -134,30 +201,47 @@
 
         function getAdminTemplate() {
             return `
-                <div class="flex min-h-screen bg-gray-50">
-                    <div class="w-64 bg-[#1B4D3E] text-white p-6 flex flex-col justify-between">
+                <div class="flex min-h-screen bg-slate-50">
+                    <div class="w-64 bg-[#1B4D3E] text-white p-6 flex flex-col justify-between shadow-xl relative z-20">
                         <div class="space-y-6">
-                            <h1 class="text-xl font-bold border-b border-emerald-700 pb-4 tracking-wide">Riçik Yönetim</h1>
+                            <div class="flex items-center space-x-2 border-b border-emerald-700 pb-4">
+                                <i class="fa-solid fa-shield-halved text-emerald-400 text-xl"></i>
+                                <h1 class="text-xl font-bold tracking-wide">Riçik Yönetim</h1>
+                            </div>
                             <nav class="space-y-1">
-                                <a href="#" class="block py-2.5 px-4 rounded-lg bg-emerald-800 font-semibold shadow">Onay Bekleyenler</a>
+                                <a href="#" class="flex items-center space-x-3 py-2.5 px-4 rounded-xl bg-emerald-800 font-semibold shadow-inner transition">
+                                    <i class="fa-solid fa-clipboard-check text-emerald-300"></i>
+                                    <span>Başvuru Havuzu</span>
+                                </a>
                             </nav>
                         </div>
-                        <button onclick="handleLogout()" class="w-full bg-red-900 hover:bg-red-800 text-red-200 py-2.5 px-4 rounded-lg font-semibold text-left transition">Kapat / Çıkış</button>
+                        <button onclick="handleLogout()" class="w-full bg-rose-950 hover:bg-rose-900 text-rose-200 py-3 px-4 rounded-xl font-semibold flex items-center justify-between transition shadow">
+                            <span>Oturumu Kapat</span><i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+                        </button>
                     </div>
                     <div class="flex-1 p-8 overflow-y-auto">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-6">Üyelik Başvuruları Havuzu</h2>
-                        <div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+                        <div class="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
+                            <div>
+                                <h2 class="text-3xl font-bold text-slate-800">Üyelik Başvuruları</h2>
+                                <p class="text-sm text-slate-500 font-medium">Onay sırasındaki köylülerimizin başvuru listesi.</p>
+                            </div>
+                            <div class="bg-emerald-100 text-emerald-800 font-bold px-4 py-2 rounded-full text-xs flex items-center space-x-1.5 shadow-sm">
+                                <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+                                <span>Yönetici Oturumu Aktif</span>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                             <table class="w-full text-left border-collapse">
-                                <thead class="bg-gray-100 text-xs font-bold uppercase text-gray-600 border-b">
+                                <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100">
                                     <tr>
                                         <th class="p-4">Ad Soyad</th>
-                                        <th class="p-4">Anne / Baba Adı</th>
-                                        <th class="p-4">Telefon</th>
-                                        <th class="p-4 text-right">İşlem</th>
+                                        <th class="p-4">Soy Ağacı (Anne/Baba)</th>
+                                        <th class="p-4">İletişim Numarası</th>
+                                        <th class="p-4 text-right">Aksiyon</th>
                                     </tr>
                                 </thead>
-                                <tbody id="admin-table-body" class="text-sm divide-y divide-gray-100">
-                                    <tr><td colspan="4" class="p-4 text-center text-gray-500 font-medium">Başvurular yükleniyor...</td></tr>
+                                <tbody id="admin-table-body" class="text-sm divide-y divide-slate-100">
+                                    <tr><td colspan="4" class="p-6 text-center text-slate-400 font-medium"><i class="fa-solid fa-spinner animate-spin mr-2"></i> Başvurular güncelleniyor...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -168,17 +252,23 @@
 
         function getProfileTemplate() {
             return `
-                <div class="max-w-xl mx-auto my-16 bg-white p-8 rounded-xl shadow-lg border border-gray-200 text-center">
-                    <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">✓</div>
-                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Sisteme Başarıyla Girdiniz!</h2>
-                    <p class="text-sm text-gray-600 mb-6">Köylü onay ve profil yönetim sisteminiz şu an aktiftir.</p>
-                    <button onclick="handleLogout()" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-2 rounded-lg font-semibold text-sm transition">Güvenli Çıkış</button>
+                <div class="max-w-xl mx-auto my-16 bg-white p-8 rounded-2xl shadow-xl border border-slate-100 text-center space-y-6">
+                    <div class="w-20 h-20 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-4xl shadow-inner animate-bounce"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="space-y-2">
+                        <h2 class="text-3xl font-bold text-slate-800">Sisteme Hoş Geldiniz!</h2>
+                        <p class="text-sm text-slate-500 max-w-sm mx-auto">Köylü onay profiliniz aktiftir. Çok yakında harita ve interaktif sohbet alanı bu ekran üzerinden hizmete açılacaktır.</p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100">
+                        <button onclick="handleLogout()" class="bg-slate-800 hover:bg-slate-900 text-white px-8 py-3 rounded-xl font-bold text-sm transition shadow-md hover:shadow-lg flex items-center justify-center space-x-2 mx-auto">
+                            <span>Güvenli Çıkış Yap</span><i class="fa-solid fa-power-off text-xs"></i>
+                        </button>
+                    </div>
                 </div>
             `;
         }
 
         // ==========================================
-        // İLETİŞİM MOTORLARI (API CALLS)
+        // API SÜREÇLERİ
         // ==========================================
 
         async function handleLogin() {
@@ -187,8 +277,7 @@
             const errorDiv = document.getElementById('login-error');
 
             if(!telefon || !sifre) {
-                errorDiv.innerText = "Lütfen tüm alanları doldurun.";
-                errorDiv.classList.remove('hidden');
+                showBoxError(errorDiv, "Lütfen tüm alanları doldurun.");
                 return;
             }
 
@@ -208,12 +297,10 @@
                     errorDiv.classList.add('hidden');
                     navigateTo('dashboard');
                 } else {
-                    errorDiv.innerText = data.message || "Giriş başarısız.";
-                    errorDiv.classList.remove('hidden');
+                    showBoxError(errorDiv, data.message || "Giriş bilgileri geçersiz.");
                 }
             } catch (err) {
-                errorDiv.innerText = "Canlı sunucuya ulaşılamıyor.";
-                errorDiv.classList.remove('hidden');
+                showBoxError(errorDiv, "Canlı sunucuya erişim sağlanamadı.");
             }
         }
 
@@ -230,8 +317,7 @@
             const successDiv = document.getElementById('reg-success');
 
             if(!ad || !soyad || !baba_adi || !anne_adi || !dogum_tarihi || !telefon || !sifre) {
-                errorDiv.innerText = "Lütfen tüm alanları doldurun.";
-                errorDiv.classList.remove('hidden');
+                showBoxError(errorDiv, "Lütfen başvuru formundaki tüm alanları doldurun.");
                 return;
             }
 
@@ -247,17 +333,15 @@
 
                 if(res.ok) {
                     errorDiv.classList.add('hidden');
-                    successDiv.innerText = data.message || "Başvurunuz başarıyla alındı!";
+                    successDiv.querySelector('span').innerText = data.message || "Başvurunuz başarıyla havuzu iletildi!";
                     successDiv.classList.remove('hidden');
                     document.getElementById('register-form').classList.add('hidden');
                     setTimeout(() => { navigateTo('login'); }, 4000);
                 } else {
-                    errorDiv.innerText = data.message || "Kayıt sırasında bir hata oluştu.";
-                    errorDiv.classList.remove('hidden');
+                    showBoxError(errorDiv, data.message || "Kayıt formu iletilemedi.");
                 }
             } catch (err) {
-                errorDiv.innerText = "Sunucu bağlantı hatası yaşandı.";
-                errorDiv.classList.remove('hidden');
+                showBoxError(errorDiv, "Sunucuya bağlanılamadı.");
             }
         }
 
@@ -271,22 +355,24 @@
                 const tbody = document.getElementById('admin-table-body');
 
                 if (!res.ok || data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-gray-500 font-medium">Onay sırasında bekleyen yeni köylü başvurusu bulunmuyor.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 font-medium"><i class="fa-solid fa-folder-open mr-2 text-lg"></i> Havuzda onay bekleyen yeni başvuru bulunmuyor.</td></tr>`;
                     return;
                 }
 
                 tbody.innerHTML = data.map(u => `
-                    <tr class="hover:bg-gray-50/70 transition">
-                        <td class="p-4 font-semibold text-gray-700">${u.ad} ${u.soyad}</td>
-                        <td class="p-4 text-gray-600">${u.anne_adi} / ${u.baba_adi}</td>
-                        <td class="p-4 text-gray-600">${u.telefon}</td>
+                    <tr class="hover:bg-slate-50/70 transition">
+                        <td class="p-4 font-bold text-slate-700">${u.ad} ${u.soyad}</td>
+                        <td class="p-4 text-slate-600 font-medium"><span class="bg-slate-100 px-2 py-1 rounded text-xs">A: ${u.anne_adi}</span> <span class="bg-slate-100 px-2 py-1 rounded text-xs">B: ${u.baba_adi}</span></td>
+                        <td class="p-4 text-slate-600 font-mono font-medium">${u.telefon}</td>
                         <td class="p-4 text-right">
-                            <button onclick="approveUser(${u.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-1.5 rounded-lg text-xs shadow-sm transition">Onayla</button>
+                            <button onclick="approveUser(${u.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm hover:shadow transition flex items-center space-x-1 inline-flex">
+                                <i class="fa-solid fa-user-check"></i> <span>Onayla</span>
+                            </button>
                         </td>
                     </tr>
                 `).join('');
             } catch (e) {
-                document.getElementById('admin-table-body').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500">Veriler sunucudan çekilemedi.</td></tr>`;
+                document.getElementById('admin-table-body').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-rose-500 font-bold">Veriler çekilirken hata oluştu.</td></tr>`;
             }
         }
 
@@ -300,10 +386,14 @@
                     body: JSON.stringify({ yeniDurum: 'aktif' })
                 });
                 if(res.ok) {
-                    alert("Köylümüz başarıyla onaylandı!");
                     loadAdminData();
-                } else { alert("İşlem sunucu tarafından reddedildi."); }
+                } else { alert("İşlem onaylanamadı."); }
             } catch(e) { alert("Sistem hatası."); }
+        }
+
+        function showBoxError(divElement, text) {
+            divElement.querySelector('span').innerText = text;
+            divElement.classList.remove('hidden');
         }
 
         function handleLogout() {
@@ -312,7 +402,6 @@
             renderPage();
         }
 
-        // İlk yükleme tetikleyicisi
         renderPage();
     </script>
 </body>
