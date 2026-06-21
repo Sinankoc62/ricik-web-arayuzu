@@ -12,8 +12,15 @@
         </div>
 
     <script>
-        // CANLI SUNUCU REHBERİ
         const API_URL = "https://ricik-backend2.onrender.com/api";
+        
+        // Aktif ekranı takip etmek için durum değişkeni ('login', 'register', 'dashboard')
+        let currentScreen = localStorage.getItem('userToken') ? 'dashboard' : 'login';
+
+        function navigateTo(screen) {
+            currentScreen = screen;
+            renderPage();
+        }
 
         // Ekranları Yöneten Dinamik Router
         function renderPage() {
@@ -21,18 +28,27 @@
             const token = localStorage.getItem('userToken');
             const userRole = localStorage.getItem('userRole');
 
-            if (!token) {
-                app.innerHTML = getLoginTemplate();
+            if (token) {
+                if (userRole === 'admin') {
+                    app.innerHTML = getAdminTemplate();
+                    loadAdminData();
+                } else {
+                    app.innerHTML = getProfileTemplate();
+                }
                 return;
             }
 
-            if (userRole === 'admin') {
-                app.innerHTML = getAdminTemplate();
-                loadAdminData();
+            // Giriş ve Kayıt ekranları arası geçiş kontrolü
+            if (currentScreen === 'register') {
+                app.innerHTML = getRegisterTemplate();
             } else {
-                app.innerHTML = getProfileTemplate();
+                app.innerHTML = getLoginTemplate();
             }
         }
+
+        // ==========================================
+        // EKRAN ŞABLONLARI (TEMPLATES)
+        // ==========================================
 
         function getLoginTemplate() {
             return `
@@ -51,9 +67,65 @@
                             </div>
                             <button onclick="handleLogin()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white p-2.5 rounded-lg font-bold transition duration-200 shadow">Giriş Yap</button>
                         </div>
-                        <div class="text-center mt-6 pt-4 border-t border-gray-100 text-xs text-gray-500">
-                            <b>Güncel Test Hesabı:</b><br>
-                            Tel: 05555555555 | Şifre: 123456
+                        <div class="text-center mt-4">
+                            <p class="text-sm text-gray-600">Henüz üye değil misiniz? 
+                                <a href="#" onclick="navigateTo('register')" class="text-emerald-700 font-bold hover:underline">Yeni Başvuru Yap</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getRegisterTemplate() {
+            return `
+                <div class="flex items-center justify-center min-h-screen bg-gray-100 px-4 py-8">
+                    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
+                        <h2 class="text-2xl font-bold text-center text-[#1B4D3E] mb-2">Yeni Üyelik Başvurusu</h2>
+                        <p class="text-xs text-gray-500 text-center mb-6">Lütfen bilgilerinizi eksiksiz doldurun. Başvurunuz yönetim onayına düşecektir.</p>
+                        
+                        <div id="reg-error" class="hidden p-3 bg-red-100 text-red-700 text-sm rounded-lg mb-4 font-medium"></div>
+                        <div id="reg-success" class="hidden p-3 bg-green-100 text-green-700 text-sm rounded-lg mb-4 font-medium"></div>
+
+                        <div id="register-form" class="space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Adınız</label>
+                                    <input type="text" id="reg-ad" placeholder="Ahmet" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Soyadınız</label>
+                                    <input type="text" id="reg-soyad" placeholder="Yılmaz" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Baba Adı</label>
+                                    <input type="text" id="reg-baba" placeholder="Mehmet" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600">Anne Adı</label>
+                                    <input type="text" id="reg-anne" placeholder="Ayşe" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600">Doğum Tarihi</label>
+                                <input type="date" id="reg-dogum" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600">Telefon Numarası</label>
+                                <input type="text" id="reg-phone" placeholder="05xxxxxxxxx" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600">Şifre Belirleyin</label>
+                                <input type="password" id="reg-pass" placeholder="******" class="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 text-sm">
+                            </div>
+                            <button onclick="handleRegister()" class="w-full bg-[#1B4D3E] hover:bg-emerald-800 text-white p-2.5 rounded-lg font-bold transition duration-200 shadow text-sm">Başvuruyu Tamamla</button>
+                        </div>
+                        <div class="text-center mt-4 border-t border-gray-100 pt-3">
+                            <p class="text-sm text-gray-600">Zaten başvurunuz var mı? 
+                                <a href="#" onclick="navigateTo('login')" class="text-emerald-700 font-bold hover:underline">Giriş Ekranına Dön</a>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -70,7 +142,7 @@
                                 <a href="#" class="block py-2.5 px-4 rounded-lg bg-emerald-800 font-semibold shadow">Onay Bekleyenler</a>
                             </nav>
                         </div>
-                        <button onclick="handleLogout()" class="w-full bg-red-900 hover:bg-red-800 text-red-200 py-2.5 px-4 rounded-lg font-semibold text-left transition">Kapata / Çıkış</button>
+                        <button onclick="handleLogout()" class="w-full bg-red-900 hover:bg-red-800 text-red-200 py-2.5 px-4 rounded-lg font-semibold text-left transition">Kapat / Çıkış</button>
                     </div>
                     <div class="flex-1 p-8 overflow-y-auto">
                         <h2 class="text-2xl font-bold text-gray-800 mb-6">Üyelik Başvuruları Havuzu</h2>
@@ -106,8 +178,9 @@
         }
 
         // ==========================================
-        // İLETİŞİM MOTORU (CORS UYUMLU FETCH)
+        // İLETİŞİM MOTORLARI (API CALLS)
         // ==========================================
+
         async function handleLogin() {
             const telefon = document.getElementById('login-phone').value.trim();
             const sifre = document.getElementById('login-pass').value.trim();
@@ -120,13 +193,9 @@
             }
 
             try {
-                // Tarayıcı kısıtlamalarını aşan gelişmiş CORS isteği
                 const res = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     mode: 'cors',
                     body: JSON.stringify({ telefon, sifre })
                 });
@@ -137,14 +206,57 @@
                     localStorage.setItem('userToken', data.token);
                     localStorage.setItem('userRole', data.user.rol);
                     errorDiv.classList.add('hidden');
-                    renderPage();
+                    navigateTo('dashboard');
                 } else {
-                    // Sunucudan gelen özel hata mesajını ekrana basıyoruz
                     errorDiv.innerText = data.message || "Giriş başarısız.";
                     errorDiv.classList.remove('hidden');
                 }
             } catch (err) {
-                errorDiv.innerText = "Canlı sunucuya ulaşılamıyor (Bağlantı hatası).";
+                errorDiv.innerText = "Canlı sunucuya ulaşılamıyor.";
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        async function handleRegister() {
+            const ad = document.getElementById('reg-ad').value.trim();
+            const soyad = document.getElementById('reg-soyad').value.trim();
+            const baba_adi = document.getElementById('reg-baba').value.trim();
+            const anne_adi = document.getElementById('reg-anne').value.trim();
+            const dogum_tarihi = document.getElementById('reg-dogum').value;
+            const telefon = document.getElementById('reg-phone').value.trim();
+            const sifre = document.getElementById('reg-pass').value.trim();
+            
+            const errorDiv = document.getElementById('reg-error');
+            const successDiv = document.getElementById('reg-success');
+
+            if(!ad || !soyad || !baba_adi || !anne_adi || !dogum_tarihi || !telefon || !sifre) {
+                errorDiv.innerText = "Lütfen tüm alanları doldurun.";
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    mode: 'cors',
+                    body: JSON.stringify({ ad, soyad, baba_adi, anne_adi, dogum_tarihi, telefon, sifre })
+                });
+
+                const data = await res.json();
+
+                if(res.ok) {
+                    errorDiv.classList.add('hidden');
+                    successDiv.innerText = data.message || "Başvurunuz başarıyla alındı!";
+                    successDiv.classList.remove('hidden');
+                    document.getElementById('register-form').classList.add('hidden');
+                    setTimeout(() => { navigateTo('login'); }, 4000);
+                } else {
+                    errorDiv.innerText = data.message || "Kayıt sırasında bir hata oluştu.";
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorDiv.innerText = "Sunucu bağlantı hatası yaşandı.";
                 errorDiv.classList.remove('hidden');
             }
         }
@@ -184,14 +296,11 @@
             try {
                 const res = await fetch(`${API_URL}/admin/users/${id}/status`, {
                     method: 'PUT',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ yeniDurum: 'aktif' })
                 });
                 if(res.ok) {
-                    alert("Köylümüz başarıyla onaylandı ve haritada görünür kılındı!");
+                    alert("Köylümüz başarıyla onaylandı!");
                     loadAdminData();
                 } else { alert("İşlem sunucu tarafından reddedildi."); }
             } catch(e) { alert("Sistem hatası."); }
@@ -199,10 +308,11 @@
 
         function handleLogout() {
             localStorage.clear();
+            currentScreen = 'login';
             renderPage();
         }
 
-        // İlk Yüklemede Sayfayı Tetikle
+        // İlk yükleme tetikleyicisi
         renderPage();
     </script>
 </body>
