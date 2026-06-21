@@ -22,7 +22,7 @@
                 <div onclick="handleLogoClick()" class="flex items-center space-x-4 w-full lg:w-auto justify-between lg:justify-start cursor-pointer group">
                     <div class="flex items-center space-x-4">
                         <div class="w-20 h-20 bg-transparent group-hover:scale-105 transition duration-300 flex-shrink-0 flex items-center justify-center p-1">
-                            <img src="ricik-logo.png" alt="Riçik Köyü Derneği Logo" class="w-full h-full object-contain">
+                            <img src="Ricik Logo.png" alt="Riçik Köyü Derneği Logo" class="w-full h-full object-contain">
                         </div>
                         <div>
                             <span class="font-extrabold text-2xl tracking-tight text-[#1E3E28] block leading-none group-hover:text-[#8B1E14] transition">RİÇİK KÖYÜ</span>
@@ -80,7 +80,7 @@
         let userToken = localStorage.getItem('userToken');
         let userRole = localStorage.getItem('userRole');
 
-        // TAM 10 ADET AKTİF SLIDER VERİ HAVUZU
+        // TAM 10 ADET REORGANİZE EDİLMİŞ SLIDER VERİSİ
         const sliderData = [
             {
                 baslik: "Köklerimizden Güç Alıyoruz, Dünyanın Dört Bir Yanında Birlik Olduk!",
@@ -88,9 +88,11 @@
                 gorsel_url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
             },
             {
-                baslik: "Köyümüzün Geleceği İçin Omuz Omuza",
-                alt_metin: "Derneğimizin çatısı altında birleşerek sosyal yardımlaşma, burs faaliyetleri Cody ve kalkınma projelerimizi büyütmeye devam ediyoruz.",
-                gorsel_url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
+                // 🛠️ 2. SLAYT: LOGO KUTLAMA VE GÖRSEL ALANI
+                baslik: "Yeni Logomuz Tüm Camiamıza Hayırlı Olsun!",
+                alt_metin: "Köyümüzün köklü tarihini, doğasını ve dünyaya yayılan birliktelik ruhunu temsil eden yeni kurumsal logomuz yayında. Gururla taşıyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
+                isLogoSlide: true // Bu slaytta sağ tarafta logo basılması için işaretçi
             },
             {
                 baslik: "Geleneksel Kültür Bilinci ve Birlik",
@@ -124,7 +126,7 @@
             },
             {
                 baslik: "Kültür Evi ve Dijital Köy Arşivi",
-                alt_metin: "Geçmişten günümüze aile ağaçlarımızı, eski fotoğraflarimizi ve köyümüzün tarihini dijital kütüğümüzde güvence altına alıyoruz.",
+                alt_metin: "Geçmişten günümüze aile ağaçlarımızı, eski fotoğraflarımızı ve köyümüzün tarihini dijital kütüğümüzde güvence altına alıyoruz.",
                 gorsel_url: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1200&q=80"
             },
             {
@@ -137,7 +139,7 @@
         const fallbackNews = [
             { id: 1, baslik: "2026 Geleneksel Riçik Yayla Şenliği Tarihi Netleşti", metin: "Köyümüzün kültürünü yaşatacağımız büyük şenliğimiz Temmuz ayının ilk haftasında köy meydanında coşkuyla gerçekleştirilecektir.", tarih_format: "21.06.2026" },
             { id: 2, baslik: "Üniversite Öğrencilerimiz İçin Burs Başvuruları Başladı", metin: "Derneğimizin bu yıl lisans öğrencilerine sağlayacağı karşılıksız eğitim desteği için dijital evrak kabul süreci aktif edilmiştir.", tarih_format: "18.06.2026" },
-            { id: 3, baslik: "Köy Mezarlığı Çevre Düzenleme Çalışmaları Tamamlandı", metin: "Dernek yönetimimizin koordinasyonu ve köylülerimizin değerli bağışlarıyla köy mezarlığı koruma duvarı projesi bitirilmiştir.", tarih_format: "14.06.2026" },
+            { id: 3, baslik: "Köy Mezarlığı Çevre Düzenleme Çalışmaları Tamamlandı", metin: "Dernek yönetimimizin koordinasyonu ve köylülerimizin değerli bağışlarıyla köy mezarlığı projesi bitirilmiştir.", tarih_format: "14.06.2026" },
             { id: 4, baslik: "İstanbul Gençlik Kolları İstişare Toplantısı Yapıldı", metin: "Gurbetteki gençlerimizin bir araya gelerek kültür ve yardımlaşma faaliyetlerini planladığı kahvaltılı buluşma başarıyla sağlandı.", tarih_format: "10.06.2026" },
             { id: 5, baslik: "Yıllık Aidat ve Katkı Payı Ödemeleri Hakkında Bilgilendirme", metin: "Dernek merkezimizin faaliyetlerini kesintisiz sürdürebilmesi adına yıllık üyelik aidatlarının tamamlanması önemle rica olunur.", tarih_format: "05.06.2026" }
         ];
@@ -190,8 +192,9 @@
         function getPortalHomepageTemplate() {
             return `
                 <div class="relative rounded-3xl overflow-hidden shadow-2xl h-[360px] lg:h-[400px] flex flex-col justify-between p-6 sm:p-12 text-white bg-cover bg-center transition-all duration-700" id="main-hero-slider">
-                    <div class="max-w-2xl space-y-4 my-auto relative z-10 animate-fade" id="slider-content-block"></div>
-                    <div class="relative z-10 flex justify-center items-center space-x-2 pt-4 bg-black/10 backdrop-blur-[2px] py-2 rounded-full max-w-sm mx-auto px-4">
+                    <div class="w-full h-full flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10 animate-fade" id="slider-content-block">
+                        </div>
+                    <div class="relative z-10 flex justify-center items-center space-x-2 pt-4 bg-black/10 backdrop-blur-[2px] py-2 rounded-full max-w-sm mx-auto px-4 mb-2">
                         ${sliderData.map((_, idx) => `
                             <button onclick="jumpToSlider(${idx})" id="slider-dot-${idx}" class="h-2 rounded-full transition-all duration-300 bg-white/40 hover:bg-white w-2"></button>
                         `).join('')}
@@ -199,7 +202,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
-                    
                     <div class="space-y-4">
                         <div class="border-b-2 border-[#1E3E28] pb-3 flex items-center space-x-2 text-[#1E3E28]">
                             <i class="fa-solid fa-newspaper text-xl"></i>
@@ -238,7 +240,6 @@
                             `).join('')}
                         </div>
                     </div>
-
                 </div>
             `;
         }
@@ -252,15 +253,56 @@
                 currentSliderIndex = (currentSliderIndex + 1) % sliderData.length; updateSliderDOM();
             }, 5000);
         }
+        
         function jumpToSlider(index) { currentSliderIndex = index; updateSliderDOM(); startSliderTimer(); }
+        
         function updateSliderDOM() {
-            const sliderBg = document.getElementById('main-hero-slider'); const contentBlock = document.getElementById('slider-content-block');
+            const sliderBg = document.getElementById('main-hero-slider'); 
+            const contentBlock = document.getElementById('slider-content-block');
             if (!sliderBg || !contentBlock) return;
+            
             const activeData = sliderData[currentSliderIndex];
             sliderBg.style.backgroundImage = `linear-gradient(to right, rgba(20, 62, 40, 0.95), rgba(8, 28, 18, 0.65)), url('${activeData.gorsel_url}')`;
-            contentBlock.classList.remove('animate-fade'); void contentBlock.offsetWidth; contentBlock.classList.add('animate-fade');
-            contentBlock.innerHTML = `<span class="bg-[#8B1E14] text-white font-extrabold px-3 py-1 rounded-md text-[9px] tracking-wider uppercase inline-block shadow-sm">Duyuru</span><h2 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white">${activeData.baslik}</h2><p class="text-sm sm:text-base text-slate-200/90 leading-relaxed font-light max-w-xl">${activeData.alt_metin}</p>`;
-            sliderData.forEach((_, idx) => { const dot = document.getElementById(`slider-dot-${idx}`); if (dot) { if (idx === currentSliderIndex) { dot.classList.remove('bg-white/40', 'w-2'); dot.classList.add('bg-white', 'w-5'); } else { dot.classList.remove('bg-white', 'w-5'); dot.classList.add('bg-white/40', 'w-2'); } } });
+            
+            contentBlock.classList.remove('animate-fade'); 
+            void contentBlock.offsetWidth; 
+            contentBlock.classList.add('animate-fade');
+
+            // 🛠️ 2. SLAYT ÖZEL YERLEŞİM AYARI (Logo Slaytı ise sağa büyük logo basılır)
+            if (activeData.isLogoSlide) {
+                contentBlock.innerHTML = `
+                    <div class="space-y-4 max-w-xl text-left my-auto">
+                        <span class="bg-[#8B1E14] text-white font-extrabold px-3 py-1 rounded-md text-[9px] tracking-wider uppercase inline-block shadow-sm">Kurumsal Kimlik</span>
+                        <h2 class="text-3xl sm:text-4xl font-black tracking-tight leading-tight text-white">${activeData.baslik}</h2>
+                        <p class="text-sm text-slate-200/90 leading-relaxed font-light">${activeData.alt_metin}</p>
+                    </div>
+                    <div class="w-44 h-44 lg:w-56 lg:h-56 rounded-full overflow-hidden p-2 bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl flex items-center justify-center flex-shrink-0 mx-auto lg:mx-0 transition duration-500 hover:scale-105">
+                        <img src="Ricik Logo.png" alt="Büyük Riçik Logo" class="w-full h-full object-contain">
+                    </div>
+                `;
+            } else {
+                // Diğer 9 standart slayt düzeni
+                contentBlock.innerHTML = `
+                    <div class="space-y-4 max-w-2xl text-left my-auto w-full">
+                        <span class="bg-[#8B1E14] text-white font-extrabold px-3 py-1 rounded-md text-[9px] tracking-wider uppercase inline-block shadow-sm">Duyuru</span>
+                        <h2 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white">${activeData.baslik}</h2>
+                        <p class="text-sm sm:text-base text-slate-200/90 leading-relaxed font-light max-w-xl">${activeData.alt_metin}</p>
+                    </div>
+                `;
+            }
+
+            sliderData.forEach((_, idx) => { 
+                const dot = document.getElementById(`slider-dot-${idx}`); 
+                if (dot) { 
+                    if (idx === currentSliderIndex) { 
+                        dot.classList.remove('bg-white/40', 'w-2'); 
+                        dot.classList.add('bg-white', 'w-5'); 
+                    } else { 
+                        dot.classList.remove('bg-white', 'w-5'); 
+                        dot.classList.add('bg-white/40', 'w-2'); 
+                    } 
+                } 
+            });
         }
 
         // ==========================================
