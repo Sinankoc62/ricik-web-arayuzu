@@ -33,4 +33,300 @@
                 </div>
 
                 <nav class="hidden lg:flex items-center space-x-1 text-sm font-semibold text-slate-600">
-                    <a href="#" class="px-3 py-2 text-[#1E3E28] hover:text-[#8B1E14] hover
+                    <a href="#" class="px-3 py-2 text-[#1E3E28] hover:text-[#8B1E14] hover:bg-slate-50 rounded-xl transition">Haberler</a>
+                    <a href="#" class="px-3 py-2 hover:text-[#1E3E28] hover:text-[#8B1E14] hover:bg-slate-50 rounded-xl transition">Hakkımızda</a>
+                    <a href="#" class="px-3 py-2 hover:text-[#1E3E28] hover:text-[#8B1E14] hover:bg-slate-50 rounded-xl transition">Faaliyetler</a>
+                    <a href="#" class="px-3 py-2 hover:text-[#1E3E28] hover:text-[#8B1E14] hover:bg-slate-50 rounded-xl transition">Etkinlikler</a>
+                    <a href="#" class="px-3 py-2 hover:text-[#1E3E28] hover:text-[#8B1E14] hover:bg-slate-50 rounded-xl transition">Medya Merkezi</a>
+                    <a href="#" class="px-3 py-2 hover:text-[#1E3E28] hover:text-[#8B1E14] hover:bg-slate-50 rounded-xl transition">İletişim</a>
+                </nav>
+                
+                <div class="flex items-center space-x-2.5 w-full lg:w-auto justify-end border-t lg:border-t-0 pt-3 lg:pt-0">
+                    <button onclick="openAuthModal('login')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs tracking-wide transition flex items-center space-x-1.5 border border-slate-200">
+                        <i class="fa-solid fa-lock text-[10px]"></i> <span>Üye Girişi</span>
+                    </button>
+                    <button onclick="openAuthModal('register')" class="px-4 py-2.5 bg-[#1E3E28] hover:bg-[#142a1b] text-white font-bold rounded-xl text-xs tracking-wide transition flex items-center space-x-1.5 shadow-md shadow-emerald-950/20">
+                        <i class="fa-solid fa-user-plus text-[10px]"></i> <span>Yeni Üye Başvurusu</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <main id="app" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+        </main>
+
+    <footer class="bg-[#1E3E28] text-emerald-100/70 py-10 px-6 border-t border-[#142a1b] text-xs mt-auto shadow-inner">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <p>© 2026 Riçik Köyü Kültür ve Yardımlaşma Derneği. Tüm hakları saklıdır.</p>
+            <div class="flex space-x-6">
+                <a href="https://wa.me/#" target="_blank" class="text-white hover:text-[#8B1E14] flex items-center space-x-1.5 transition font-semibold">
+                    <i class="fa-brands fa-whatsapp text-sm text-emerald-400"></i> <span>Yönetim Masası Destek</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="auth-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full transition w-8 h-8 flex items-center justify-center font-bold">✕</button>
+            <div id="modal-form-content" class="p-6 sm:p-8"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://ricik-backend2.onrender.com/api";
+        let userToken = localStorage.getItem('userToken');
+        let userRole = localStorage.getItem('userRole');
+
+        // TAM 10 ADET AKTİF SLIDER VERİ HAVUZU
+        const sliderData = [
+            {
+                baslik: "Köklerimizden Güç Alıyoruz, Dünyanın Dört Bir Yanında Birlik Olduk!",
+                alt_metin: "Riçik (Geçitveren) Köyü Sosyal Dayanışma Platformu'na hoş geldiniz. Gurbetten sılaya uzanan bağlarımızı dijital ağımızla güçlendiriyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80"
+            },
+            {
+                baslik: "Köyümüzün Geleceği İçin Omuz Omuza",
+                alt_metin: "Derneğimizin çatısı altında birleşerek sosyal yardımlaşma, burs faaliyetleri Cody ve kalkınma projelerimizi büyütmeye devam ediyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80"
+            },
+            {
+                baslik: "Geleneksel Kültür Bilinci ve Birlik",
+                alt_metin: "Nesiller arası köprüler kuruyor, kadim geleneklerimizi metropollerden köyümüze kadar canlı tutmayı amaçlıyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80"
+            },
+            {
+                baslik: "Eğitimde Dayanışma: Riçik Gençlik Bursları",
+                alt_metin: "Üniversitede okuyan köylü gençlerimizin eğitim hayatlarına destek oluyor, parlak bir gelecek için onlara omuz veriyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80"
+            },
+            {
+                baslik: "Doğayla İç İçe: Köyümüzün Eşsiz Coğrafyası",
+                alt_metin: "Yayla şenliklerimiz, tertemiz havası ve yeşilin her tonuyla Riçik, hepimizin kalbinde silinmez bir iz bırakıyor.",
+                gorsel_url: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80"
+            },
+            {
+                baslik: "Sosyal Yardımlaşma ve Destek Ağı",
+                alt_metin: "Zor günlerde kenetlenmeyi bilen köylülerimizle birlikte, ihtiyaç sahibi ailelerimizin her an yanında olmaya gayret gösteriyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1469571486040-0b9b17502cd1?auto=format&fit=crop&w=1200&q=80"
+            },
+            {
+                baslik: "Geleneksel Yayla Şenlikleri Geri Dönüyor",
+                alt_metin: "Özlemini duyduğumuz buluşmalar, horonlar ve samimi köy sohbetleri için bu yaz yine köy meydanında bir araya geliyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80"
+            },
+            {
+                baslik: "Köy Altyapı ve Çevre Geliştirme Projeleri",
+                alt_metin: "Köyümüzün ortak kullanım alanlarını modernleştiriyor, mezarlık koruma duvarlarından yol düzenlemelerine kadar her taşı yerine koyuyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1200&q=80"
+            },
+            {
+                baslik: "Kültür Evi ve Dijital Köy Arşivi",
+                alt_metin: "Geçmişten günümüze aile ağaçlarımızı, eski fotoğraflarimizi ve köyümüzün tarihini dijital kütüğümüzde güvence altına alıyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1200&q=80"
+            },
+            {
+                baslik: "Sıcak Bir Karşılama, Güçlü Bir Gelecek",
+                alt_metin: "Riçik Köyü Kültür ve Yardımlaşma Derneği olarak, aramıza yeni katılan her üyemizle daha da büyük bir aile oluyoruz.",
+                gorsel_url: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=1200&q=80"
+            }
+        ];
+
+        const fallbackNews = [
+            { id: 1, baslik: "2026 Geleneksel Riçik Yayla Şenliği Tarihi Netleşti", metin: "Köyümüzün kültürünü yaşatacağımız büyük şenliğimiz Temmuz ayının ilk haftasında köy meydanında coşkuyla gerçekleştirilecektir.", tarih_format: "21.06.2026" },
+            { id: 2, baslik: "Üniversite Öğrencilerimiz İçin Burs Başvuruları Başladı", metin: "Derneğimizin bu yıl lisans öğrencilerine sağlayacağı karşılıksız eğitim desteği için dijital evrak kabul süreci aktif edilmiştir.", tarih_format: "18.06.2026" },
+            { id: 3, baslik: "Köy Mezarlığı Çevre Düzenleme Çalışmaları Tamamlandı", metin: "Dernek yönetimimizin koordinasyonu ve köylülerimizin değerli bağışlarıyla köy mezarlığı koruma duvarı projesi bitirilmiştir.", tarih_format: "14.06.2026" },
+            { id: 4, baslik: "İstanbul Gençlik Kolları İstişare Toplantısı Yapıldı", metin: "Gurbetteki gençlerimizin bir araya gelerek kültür ve yardımlaşma faaliyetlerini planladığı kahvaltılı buluşma başarıyla sağlandı.", tarih_format: "10.06.2026" },
+            { id: 5, baslik: "Yıllık Aidat ve Katkı Payı Ödemeleri Hakkında Bilgilendirme", metin: "Dernek merkezimizin faaliyetlerini kesintisiz sürdürebilmesi adına yıllık üyelik aidatlarının tamamlanması önemle rica olunur.", tarih_format: "05.06.2026" }
+        ];
+
+        const infoList = [
+            { id: 1, baslik: "Resmi Evrak Kontrolü", metin: "Kayıt başvurunuzun ardından yönetim kurulu soy kütüğü doğrulaması yapar.", img: "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=80&h=80&q=80" },
+            { id: 2, baslik: "SMS Bildirim Sistemi", metin: "Üyeliğiniz aktif edildiğinde sistemde kayıtlı numaranıza otomatik bilgilendirme mesajı düşer.", img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=80&h=80&q=80" },
+            { id: 3, baslik: "Yüksek Veri Güvenliği", metin: "Kişisel verileriniz ve şifreleriniz en üst düzey şifreleme algoritmalarıyla korunur.", img: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=80&h=80&q=80" },
+            { id: 4, baslik: "Mobil Uyumlu Panel", metin: "Tüm üye profil işlemlerinizi ve köy haritası takiplerini telefonunuzdan kolayca yapabilirsiniz.", img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=80&h=80&q=80" },
+            { id: 5, baslik: "Anlık Haberleşme Ağı", metin: "Onaylı üyelerimiz köy ağındaki diğer köylülerimizle anlık mesajlaşma şansına sahip olur.", img: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=80&h=80&q=80" }
+        ];
+        
+        let currentSliderIndex = 0;
+        let sliderInterval;
+        let newsList = [];
+
+        async function initPage() {
+            try {
+                const newsRes = await fetch(`${API_URL}/content/news`);
+                if (newsRes.ok) {
+                    const data = await newsRes.json();
+                    newsList = data.length > 0 ? data : fallbackNews;
+                } else { newsList = fallbackNews; }
+            } catch (e) { newsList = fallbackNews; }
+            
+            renderPage();
+            startSliderTimer();
+        }
+
+        function handleLogoClick() {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userRole');
+            userToken = null; userRole = null;
+            renderPage();
+            startSliderTimer();
+        }
+
+        function renderPage() {
+            const main = document.getElementById('app');
+            if (userToken) {
+                if (userRole === 'admin') {
+                    main.innerHTML = getAdminTemplate(); loadAdminData();
+                } else { main.innerHTML = getProfileTemplate(); }
+                return;
+            }
+            main.innerHTML = getPortalHomepageTemplate();
+            updateSliderDOM();
+        }
+
+        function getPortalHomepageTemplate() {
+            return `
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl h-[360px] lg:h-[400px] flex flex-col justify-between p-6 sm:p-12 text-white bg-cover bg-center transition-all duration-700" id="main-hero-slider">
+                    <div class="max-w-2xl space-y-4 my-auto relative z-10 animate-fade" id="slider-content-block"></div>
+                    <div class="relative z-10 flex justify-center items-center space-x-2 pt-4 bg-black/10 backdrop-blur-[2px] py-2 rounded-full max-w-sm mx-auto px-4">
+                        ${sliderData.map((_, idx) => `
+                            <button onclick="jumpToSlider(${idx})" id="slider-dot-${idx}" class="h-2 rounded-full transition-all duration-300 bg-white/40 hover:bg-white w-2"></button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+                    
+                    <div class="space-y-4">
+                        <div class="border-b-2 border-[#1E3E28] pb-3 flex items-center space-x-2 text-[#1E3E28]">
+                            <i class="fa-solid fa-newspaper text-xl"></i>
+                            <h3 class="text-lg font-extrabold tracking-tight">Son Gelişmeler & Haberler</h3>
+                        </div>
+                        <div class="space-y-3.5">
+                            ${newsList.slice(0, 5).map(n => `
+                                <div class="bg-white border border-slate-200/80 p-3.5 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald-200 transition flex items-start space-x-4 group cursor-pointer">
+                                    <div class="w-16 h-16 rounded-xl bg-[#FBF9F4] flex-shrink-0 flex flex-col items-center justify-center text-center border-l-4 border-[#8B1E14] p-1 transition">
+                                        <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-tight">Tarih</span>
+                                        <span class="text-xs font-black text-[#1E3E28] block mt-0.5">${n.tarih_format.split('.')[0]}.${n.tarih_format.split('.')[1]}</span>
+                                    </div>
+                                    <div class="space-y-0.5 flex-1 min-w-0">
+                                        <h4 class="font-bold text-slate-900 group-hover:text-[#1E3E28] transition text-sm leading-tight truncate">${n.baslik}</h4>
+                                        <p class="text-xs text-slate-500 leading-relaxed line-clamp-2">${n.metin}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="border-b-2 border-[#1E3E28] pb-3 flex items-center space-x-2 text-[#1E3E28]">
+                            <i class="fa-solid fa-circle-info text-xl"></i>
+                            <h3 class="text-lg font-extrabold tracking-tight">Üye Bilgilendirme Sistemi</h3>
+                        </div>
+                        <div class="space-y-3.5">
+                            ${infoList.map(i => `
+                                <div class="bg-white border border-slate-200/80 p-3.5 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald-200 transition flex items-start space-x-4">
+                                    <img src="${i.img}" class="w-16 h-16 rounded-xl object-cover border flex-shrink-0 bg-slate-50" alt="${i.baslik}">
+                                    <div class="space-y-0.5 flex-1 min-w-0">
+                                        <h4 class="font-bold text-slate-900 text-sm leading-tight truncate">${i.baslik}</h4>
+                                        <p class="text-xs text-slate-500 leading-relaxed line-clamp-2">${i.metin}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // SLIDER ZAMANLAYICI MOTOR AYARLARI
+        // ==========================================
+        function startSliderTimer() {
+            clearInterval(sliderInterval);
+            sliderInterval = setInterval(() => {
+                currentSliderIndex = (currentSliderIndex + 1) % sliderData.length; updateSliderDOM();
+            }, 5000);
+        }
+        function jumpToSlider(index) { currentSliderIndex = index; updateSliderDOM(); startSliderTimer(); }
+        function updateSliderDOM() {
+            const sliderBg = document.getElementById('main-hero-slider'); const contentBlock = document.getElementById('slider-content-block');
+            if (!sliderBg || !contentBlock) return;
+            const activeData = sliderData[currentSliderIndex];
+            sliderBg.style.backgroundImage = `linear-gradient(to right, rgba(20, 62, 40, 0.95), rgba(8, 28, 18, 0.65)), url('${activeData.gorsel_url}')`;
+            contentBlock.classList.remove('animate-fade'); void contentBlock.offsetWidth; contentBlock.classList.add('animate-fade');
+            contentBlock.innerHTML = `<span class="bg-[#8B1E14] text-white font-extrabold px-3 py-1 rounded-md text-[9px] tracking-wider uppercase inline-block shadow-sm">Duyuru</span><h2 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white">${activeData.baslik}</h2><p class="text-sm sm:text-base text-slate-200/90 leading-relaxed font-light max-w-xl">${activeData.alt_metin}</p>`;
+            sliderData.forEach((_, idx) => { const dot = document.getElementById(`slider-dot-${idx}`); if (dot) { if (idx === currentSliderIndex) { dot.classList.remove('bg-white/40', 'w-2'); dot.classList.add('bg-white', 'w-5'); } else { dot.classList.remove('bg-white', 'w-5'); dot.classList.add('bg-white/40', 'w-2'); } } });
+        }
+
+        // ==========================================
+        // AUTH MODAL KAPILARI (GİRİŞ / KAYIT)
+        // ==========================================
+        function openAuthModal(type) {
+            const modal = document.getElementById('auth-modal'); const content = document.getElementById('modal-form-content'); modal.classList.remove('hidden');
+            if (type === 'login') {
+                content.innerHTML = `
+                    <div class="space-y-5">
+                        <div class="text-center">
+                            <h3 class="text-xl font-extrabold text-[#1E3E28]">Üye Girişi</h3>
+                            <p class="text-xs text-slate-400 mt-1">Dijital dernek sistemine erişmek için bilgilerinizi girin.</p>
+                        </div>
+                        <div id="login-error" class="hidden p-3 bg-rose-50 text-rose-700 text-xs rounded-xl font-medium"><span></span></div>
+                        <div class="space-y-4">
+                            <input type="text" id="login-phone" placeholder="Telefon Numarası" class="w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1E3E28] text-sm font-medium">
+                            <input type="password" id="login-pass" placeholder="Şifre" class="w-full px-4 py-2.5 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1E3E28] text-sm font-medium">
+                            <button onclick="handleLogin()" class="w-full bg-[#1E3E28] hover:bg-[#142a1b] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-md shadow-emerald-950/10">Oturum Aç</button>
+                        </div>
+                    </div>`;
+            } else {
+                content.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="text-center">
+                            <h3 class="text-xl font-extrabold text-[#1E3E28]">Yeni Üye Başvurusu</h3>
+                            <p class="text-xs text-slate-400 mt-1">Köy kütüğüne kayıt için bilgilerinizi eksiksiz doldurun.</p>
+                        </div>
+                        <div id="reg-error" class="hidden p-3 bg-rose-50 text-rose-700 text-xs rounded-xl font-medium"><span></span></div>
+                        <div id="reg-success" class="hidden p-3 bg-emerald-50 text-emerald-700 text-xs rounded-xl font-medium"><span></span></div>
+                        <div id="register-form" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="reg-ad" placeholder="Adınız" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                                <input type="text" id="reg-soyad" placeholder="Soyadınız" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="reg-baba" placeholder="Baba Adı" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                                <input type="text" id="reg-anne" placeholder="Anne Adı" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                            </div>
+                            <input type="date" id="reg-dogum" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                            <input type="text" id="reg-phone" placeholder="Telefon Numarası" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                            <input type="password" id="reg-pass" placeholder="Güvenli Şifre Belirleyin" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                            <button onclick="handleRegister()" class="w-full bg-[#1E3E28] hover:bg-[#142a1b] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-md shadow-emerald-950/10">Başvuruyu Tamamla</button>
+                        </div>
+                    </div>`;
+            }
+        }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+
+        async function handleLogin() {
+            const telefon = document.getElementById('login-phone').value.trim(); const sifre = document.getElementById('login-pass').value.trim(); const errorDiv = document.getElementById('login-error');
+            try { const res = await fetch(`${API_URL}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ telefon, sifre }) }); const data = await res.json(); if (res.ok) { localStorage.setItem('userToken', data.token); localStorage.setItem('userRole', data.user.rol); userToken = data.token; userRole = data.user.rol; closeAuthModal(); renderPage(); } else { showBoxError(errorDiv, data.message); } } catch (err) { showBoxError(errorDiv, "Bağlantı hatası."); }
+        }
+        async function handleRegister() {
+            const ad = document.getElementById('reg-ad').value.trim(); const soyad = document.getElementById('reg-soyad').value.trim(); const baba_adi = document.getElementById('reg-baba').value.trim(); const anne_adi = document.getElementById('reg-anne').value.trim(); const dogum_tarihi = document.getElementById('reg-dogum').value; const telefon = document.getElementById('reg-phone').value.trim(); const sifre = document.getElementById('reg-pass').value.trim(); const errorDiv = document.getElementById('reg-error'); const successDiv = document.getElementById('reg-success');
+            try { const res = await fetch(`${API_URL}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ad, soyad, baba_adi, anne_adi, dogum_tarihi, telefon, sifre }) }); const data = await res.json(); if(res.ok) { errorDiv.classList.add('hidden'); successDiv.querySelector('span').innerText = data.message; successDiv.classList.remove('hidden'); document.getElementById('register-form').classList.add('hidden'); setTimeout(() => { closeAuthModal(); }, 2500); } else { showBoxError(errorDiv, data.message); } } catch (err) { showBoxError(errorDiv, "Hata oluştu."); }
+        }
+        function showBoxError(divElement, text) { divElement.querySelector('span').innerText = text; divElement.classList.remove('hidden'); }
+        function handleLogout() { localStorage.clear(); userToken = null; userRole = null; renderPage(); }
+
+        function getAdminTemplate() { return `<div class="bg-white p-6 rounded-2xl border border-slate-200"><h2 class="text-xl font-bold mb-4 text-[#1E3E28]">Admin Onay Paneli</h2><div id="admin-table-body" class="space-y-2">Yükleniyor...</div><button onclick="handleLogout()" class="mt-4 bg-[#8B1E14] text-white px-4 py-2 rounded-xl text-xs font-bold transition hover:bg-red-800">Güvenli Çıkış</button></div>`; }
+        async function loadAdminData() { const token = localStorage.getItem('userToken'); try { const res = await fetch(`${API_URL}/admin/users?durum=onay_bekliyor`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); const container = document.getElementById('admin-table-body'); if(data.length===0){ container.innerHTML="Bekleyen başvuru yok."; return; } container.innerHTML = data.map(u => `<div class="p-3 bg-slate-50 rounded-xl flex justify-between items-center text-xs font-medium"><span>${u.ad} ${u.soyad}</span><button onclick="approveUser(${u.id})" class="bg-[#1E3E28] text-white px-3 py-1 rounded-lg">Onayla</button></div>`).join(''); } catch(e){} }
+        async function approveUser(id) { const token = localStorage.getItem('userToken'); try { const res = await fetch(`${API_URL}/admin/users/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ yeniDurum: 'aktif' }) }); if(res.ok) loadAdminData(); } catch(e){} }
+        function getProfileTemplate() { return `<div class="bg-white p-6 rounded-2xl border text-center space-y-3"><h2 class="text-lg font-bold text-[#1E3E28]">Giriş Başarılı!</h2><button onclick="handleLogout()" class="bg-slate-800 text-white px-4 py-2 rounded-xl text-xs">Çıkış Yap</button></div>`; }
+
+        initPage();
+    </script>
+</body>
+</html>
