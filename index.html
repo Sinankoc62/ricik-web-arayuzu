@@ -6,6 +6,7 @@
     <title>Riçik Köyü Sosyal Dayanışma Derneği</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Harita ve Grafik Analizleri İçin Gerekli Kütüphane -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -16,6 +17,7 @@
 </head>
 <body class="bg-[#FBF9F4] text-slate-900 antialiased min-h-screen flex flex-col">
 
+    <!-- 1. LOGO UYUMLU ÜST PORTAL MENÜSÜ -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between h-24 lg:h-28">
@@ -56,12 +58,14 @@
         </div>
     </header>
 
+    <!-- 2. ANA PORTAL ALANI -->
     <main id="app" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8 mt-2">
     </main>
 
+    <!-- 3. FOOTER -->
     <footer class="bg-[#1E3E28] text-emerald-100/70 py-10 px-6 border-t border-[#142a1b] text-xs mt-auto shadow-inner">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>© 2026 Riçik Köyü Kültür ve Yardımlaşma Derneği. Tüm hakları sablıdır.</p>
+            <p>© 2026 Riçik Köyü Kültür ve Yardımlaşma Derneği. Tüm hakları saklıdır.</p>
             <div class="flex space-x-6">
                 <a href="https://wa.me/#" target="_blank" class="text-white hover:text-[#8B1E14] flex items-center space-x-1.5 transition font-semibold">
                     <i class="fa-brands fa-whatsapp text-sm text-emerald-400"></i> <span>Yönetim Masası Destek</span>
@@ -70,6 +74,7 @@
         </div>
     </footer>
 
+    <!-- 4. MODAL (GİRİŞ / KAYIT) -->
     <div id="auth-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full transition w-8 h-8 flex items-center justify-center font-bold">✕</button>
@@ -81,10 +86,10 @@
         const API_URL = "https://ricik-backend2.onrender.com/api";
         let userToken = localStorage.getItem('userToken');
         let userRole = localStorage.getItem('userRole');
-        let currentAdminTab = 'analytics'; // Varsayılan aktif admin sekmesi
+        let currentAdminTab = 'analytics';
 
         // Google Haritalar Modülünü Yükle
-        google.charts.load('current', { 'packages': ['geochart', 'corechart'] });
+        google.charts.load('current', { 'packages': ['geochart'] });
 
         // 10 ADET SEÇKİN SLIDER DUYURUSU
         let sliderData = [
@@ -126,8 +131,7 @@
                     const data = await newsRes.json();
                     if(data.length > 0) newsList = data;
                 }
-            } catch (e) { console.log("Canlı veri hatası, offline moda geçildi."); }
-            
+            } catch (e) { console.log("Offline mod."); }
             renderPage();
             startSliderTimer();
         }
@@ -157,14 +161,14 @@
 
         function getPortalHomepageTemplate() {
             return `
-                <div class="relative rounded-3xl overflow-hidden shadow-2xl h-[340px] lg:h-[380px] flex flex-col justify-between p-6 sm:p-12 text-white bg-cover bg-center transition-all duration-700" id="main-hero-slider">
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl h-[360px] lg:h-[400px] flex flex-col justify-between p-6 sm:p-12 text-white bg-cover bg-center transition-all duration-700" id="main-hero-slider">
                     <div class="w-full h-full flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10 animate-fade" id="slider-content-block"></div>
                     <div class="relative z-10 flex justify-center items-center space-x-2 pt-4 bg-black/10 backdrop-blur-[2px] py-2 rounded-full max-w-sm mx-auto px-4 mb-2">
                         ${sliderData.map((_, idx) => `<button onclick="jumpToSlider(${idx})" id="slider-dot-${idx}" class="h-2 rounded-full transition-all duration-300 bg-white/40 hover:bg-white w-2"></button>`).join('')}
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-2">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
                     <div class="space-y-4">
                         <div class="border-b-2 border-[#1E3E28] pb-3 flex items-center space-x-2 text-[#1E3E28]">
                             <i class="fa-solid fa-newspaper text-xl"></i>
@@ -207,9 +211,6 @@
             `;
         }
 
-        // ==========================================
-        // SLIDER ENGINE
-        // ==========================================
         function startSliderTimer() { clearInterval(sliderInterval); sliderInterval = setInterval(() => { currentSliderIndex = (currentSliderIndex + 1) % sliderData.length; updateSliderDOM(); }, 5000); }
         function jumpToSlider(index) { currentSliderIndex = index; updateSliderDOM(); startSliderTimer(); }
         function updateSliderDOM() {
@@ -226,9 +227,6 @@
             sliderData.forEach((_, idx) => { const dot = document.getElementById(`slider-dot-${idx}`); if (dot) { if (idx === currentSliderIndex) { dot.classList.remove('bg-white/40', 'w-2'); dot.classList.add('bg-white', 'w-5'); } else { dot.classList.remove('bg-white', 'w-5'); dot.classList.add('bg-white/40', 'w-2'); } } });
         }
 
-        // ==========================================
-        // Gelişmiş Admin Yönetim Modülü (SEO, Analiz ve CMS)
-        // ==========================================
         function getAdminTemplate() {
             return `
                 <div class="flex flex-col lg:flex-row gap-8">
@@ -279,9 +277,6 @@
             }
         }
 
-        // ==========================================
-        // GOOGLE ANALYTICS & SEO RAPORLAMA MODÜLÜ
-        // ==========================================
         function getAnalyticsTabTemplate() {
             return `
                 <div class="space-y-6">
@@ -318,7 +313,7 @@
                             <div class="overflow-hidden border rounded-xl text-xs font-medium">
                                 <table class="w-full text-left border-collapse">
                                     <thead class="bg-slate-50 border-b font-bold text-slate-500 uppercase tracking-wider text-[10px]">
-                                        <tr><th class="p-2.5">Ülke</th><th class="p-2.5">Bölge / Eyalet</th><th class="p-2.5">Şehir</th><th class="p-2.5 text-right">Ziyaret Sayısı</th></tr>
+                                        <tr><th class="p-2.5">Ülke</th><th class="p-2.5">Bölge</th><th class="p-2.5">Şehir</th><th class="p-2.5 text-right">Ziyaret</th></tr>
                                     </thead>
                                     <tbody class="divide-y text-slate-600 font-semibold font-mono">
                                         <tr><td class="p-2.5">Türkiye</td><td class="p-2.5">İstanbul</td><td class="p-2.5">Şişli</td><td class="p-2.5 text-right text-emerald-700">6,420</td></tr>
@@ -338,7 +333,6 @@
         function drawAnalyticsCharts() {
             if(typeof google === 'undefined' || !google.visualization) return;
             try {
-                // Coğrafi Harita Datası
                 var data = google.visualization.arrayToDataTable([
                     ['Country', 'Ziyaret Sayısı'],
                     ['Germany', 2110],
@@ -347,50 +341,84 @@
                     ['Azerbaijan', 840],
                     ['United States', 430]
                 ]);
-                var options = {
-                    colors: ['#E6F4EA', '#1E3E28'],
-                    backgroundColor: 'transparent',
-                    datalessRegionColor: '#F1F5F9'
-                };
+                var options = { colors: ['#E6F4EA', '#1E3E28'], backgroundColor: 'transparent', datalessRegionColor: '#F1F5F9' };
                 var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
                 chart.draw(data, options);
-            } catch(e) { console.log("Harita çizim hatası."); }
+            } catch(e) {}
         }
 
         // ==========================================
-        // BANNER / SLIDER DİNAMİK YÖNETİM MODÜLÜ
+        // UTILITY: RESIZE & IMAGE UPLOAD ENGINE (CANVAS)
+        // ==========================================
+        function processImageUpload(inputElement, targetWidth, targetHeight, callback) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Akıllı merkeze oturtarak kırpma ve boyutlandırma
+                    const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
+                    const x = (targetWidth - img.width * scale) / 2;
+                    const y = (targetHeight - img.height * scale) / 2;
+                    
+                    ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                    
+                    // Base64 formatına sıkıştırıp döndürür
+                    const processedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+                    callback(processedBase64);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ==========================================
+        // BANNER MODÜLÜ (UPLOAD VE BROWSE DESTEKLİ)
         // ==========================================
         function getBannersManagementTemplate() {
             return `
                 <div class="space-y-6">
                     <div class="border-b pb-4">
                         <h3 class="text-xl font-black text-[#1E3E28]">Slider & Vitrin Yönetimi</h3>
-                        <p class="text-xs text-slate-400 font-semibold mt-0.5">Giriş sayfasındaki 10 adet aktif slaytın başlık, açıklama ve görsel linklerini buradan yönetin.</p>
+                        <p class="text-xs text-slate-400 font-semibold mt-0.5">Görselleri bilgisayarınızdan seçip yükleyin. Sistem geniş formata göre otomatik resize eder.</p>
                     </div>
                     <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
                         ${sliderData.map((s, idx) => `
                             <div class="p-4 border rounded-2xl bg-slate-50/50 space-y-3 shadow-sm text-xs font-medium">
                                 <div class="flex justify-between items-center bg-[#1E3E28]/5 p-2 rounded-xl border border-emerald-800/10">
-                                    <span class="font-black text-[#1E3E28]"><i class="fa-solid fa-image mr-1"></i> Slayt #${idx + 1} ${s.isLogoSlide ? '(Özel Kurumsal Düzen)' : ''}</span>
+                                    <span class="font-black text-[#1E3E28]"><i class="fa-solid fa-image mr-1"></i> Slayt #${idx + 1}</span>
                                 </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="block text-slate-500 font-bold mb-1">Slayt Başlığı</label>
-                                        <input type="text" id="banner-title-${idx}" value="${s.baslik}" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-slate-500 font-bold mb-1">Slayt Başlığı</label>
+                                            <input type="text" id="banner-title-${idx}" value="${s.baslik}" class="w-full p-2.5 border rounded-xl focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-500 font-bold mb-1">Yeni Görsel Yükle (Browse / Göz At)</label>
+                                            <input type="file" accept="image/*" onchange="processImageUpload(this, 1200, 400, (b64) => { sliderData[${idx}].gorsel_url = b64; document.getElementById('preview-banner-${idx}').src = b64; })" class="w-full p-1.5 border rounded-xl bg-white text-xs">
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-slate-500 font-bold mb-1">Görsel URL (Arka Plan)</label>
-                                        <input type="text" id="banner-img-${idx}" value="${s.gorsel_url}" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                                    <div class="flex flex-col justify-center items-center bg-white p-2 rounded-2xl border">
+                                        <span class="text-[10px] uppercase font-bold text-slate-400 mb-1">Ön İzleme (Otomatik Resize)</span>
+                                        <img id="preview-banner-${idx}" src="${s.gorsel_url}" class="w-full h-24 object-cover rounded-xl border shadow-sm">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-slate-500 font-bold mb-1">Açıklama / Alt Metin</label>
-                                    <textarea id="banner-desc-${idx}" rows="2" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">${s.alt_metin}</textarea>
+                                    <textarea id="banner-desc-${idx}" rows="2" class="w-full p-2.5 border rounded-xl focus:outline-none">${s.alt_metin}</textarea>
                                 </div>
                             </div>
                         `).join('')}
                     </div>
-                    <button onclick="saveBannersCMS()" class="bg-[#1E3E28] hover:bg-[#142a1b] text-white px-5 py-3 rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-2"><i class="fa-solid fa-floppy-disk"></i> <span>Tüm Slaytları Kaydet ve Yayınla</span></button>
+                    <button onclick="saveBannersCMS()" class="bg-[#1E3E28] hover:bg-[#142a1b] text-white px-5 py-3 rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-2"><i class="fa-solid fa-floppy-disk"></i> <span>Tüm Slayt Değişikliklerini Kaydet</span></button>
                 </div>
             `;
         }
@@ -398,49 +426,44 @@
         function saveBannersCMS() {
             sliderData.forEach((s, idx) => {
                 s.baslik = document.getElementById(`banner-title-${idx}`).value.trim();
-                s.gorsel_url = document.getElementById(`banner-img-${idx}`).value.trim();
                 s.alt_metin = document.getElementById(`banner-desc-${idx}`).value.trim();
             });
-            alert("Tüm slider içerikleri ön yüzde anlık gösterilecek şekilde güncellendi!");
+            alert("Tüm slider verileri başarıyla işlendi ve ana sayfada aktifleşti!");
             renderPage();
         }
 
         // ==========================================
-        // CMS HABER EKLEME & DÜZENLEME MODÜLÜ
+        // CMS HABER YÖNETİMİ
         // ==========================================
         function getNewsManagementTemplate() {
             return `
                 <div class="space-y-6">
-                    <div class="border-b pb-4 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-xl font-black text-[#1E3E28]">Haber & Duyuru Akışı CMS</h3>
-                            <p class="text-xs text-slate-400 font-semibold mt-0.5">Giriş sayfasının sol bandında yer alan son 5 haberi yönetin.</p>
-                        </div>
+                    <div class="border-b pb-4">
+                        <h3 class="text-xl font-black text-[#1E3E28]">Haber & Duyuru Akışı CMS</h3>
+                        <p class="text-xs text-slate-400 font-semibold mt-0.5">Sol sütundaki haber akış listesini buradan yönetin.</p>
                     </div>
 
                     <div class="p-4 border border-dashed border-[#1E3E28]/40 rounded-2xl bg-[#FBF9F4]/40 space-y-3 text-xs font-semibold">
                         <span class="text-[#1E3E28] font-black block text-sm"><i class="fa-solid fa-plus-circle mr-1"></i> Yeni Haber Yayınla</span>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <input type="text" id="new-news-title" placeholder="Haber Başlığı" class="p-2.5 border rounded-xl focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
-                            <input type="text" id="new-news-date" value="23.06.2026" class="p-2.5 border rounded-xl font-mono focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                            <input type="text" id="new-news-title" placeholder="Haber Başlığı" class="p-2.5 border rounded-xl focus:outline-none">
+                            <input type="text" id="new-news-date" value="23.06.2026" class="p-2.5 border rounded-xl font-mono focus:outline-none">
                         </div>
-                        <textarea id="new-news-text" placeholder="Haber Detay İçeriği..." rows="2" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-[#1E3E28] focus:outline-none"></textarea>
+                        <textarea id="new-news-text" placeholder="Haber Detay İçeriği..." rows = "2" class="w-full p-2.5 border rounded-xl focus:outline-none"></textarea>
                         <button onclick="addNewsCMS()" class="bg-[#1E3E28] text-white font-bold px-4 py-2 rounded-xl transition hover:bg-[#142a1b] flex items-center space-x-1.5"><i class="fa-solid fa-paper-plane"></i> <span>Yayına Al</span></button>
                     </div>
 
-                    <div class="space-y-3">
+                    <div class="space-y-2">
                         <span class="text-xs font-black uppercase text-slate-400 block tracking-wider">Aktif Yayın Listesi (Son 5)</span>
-                        <div class="space-y-2">
-                            ${newsList.map((n, idx) => `
-                                <div class="p-3.5 border rounded-xl flex items-center justify-between text-xs gap-4 shadow-sm hover:border-emerald-100 bg-slate-50/40">
-                                    <div class="min-w-0 flex-1 space-y-1">
-                                        <div class="flex items-center space-x-2"><span class="bg-slate-200 text-slate-700 font-mono font-bold px-1.5 py-0.5 rounded text-[10px]">${n.tarih_format}</span><h5 class="font-bold text-slate-800 truncate">${n.baslik}</h5></div>
-                                        <p class="text-slate-500 font-medium line-clamp-1">${n.metin}</p>
-                                    </div>
-                                    <button onclick="deleteNewsCMS(${idx})" class="text-rose-600 hover:bg-rose-50 p-2.5 rounded-xl transition flex-shrink-0" title="Sil"><i class="fa-solid fa-trash-can text-sm"></i></button>
+                        ${newsList.map((n, idx) => `
+                            <div class="p-3.5 border rounded-xl flex items-center justify-between text-xs gap-4 shadow-sm bg-slate-50/40">
+                                <div class="min-w-0 flex-1 space-y-1">
+                                    <div class="flex items-center space-x-2"><span class="bg-slate-200 text-slate-700 font-mono font-bold px-1.5 py-0.5 rounded text-[10px]">${n.tarih_format}</span><h5 class="font-bold text-slate-800 truncate">${n.baslik}</h5></div>
+                                    <p class="text-slate-500 font-medium line-clamp-1">${n.metin}</p>
                                 </div>
-                            `).join('')}
-                        </div>
+                                <button onclick="deleteNewsCMS(${idx})" class="text-rose-600 hover:bg-rose-50 p-2.5 rounded-xl transition"><i class="fa-solid fa-trash-can text-sm"></i></button>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
             `;
@@ -450,50 +473,55 @@
             const baslik = document.getElementById('new-news-title').value.trim();
             const tarih_format = document.getElementById('new-news-date').value.trim();
             const metin = document.getElementById('new-news-text').value.trim();
-            if(!baslik || !metin) { alert("Lütfen haber alanlarını doldurun."); return; }
+            if(!baslik || !metin) { alert("Lütfen alanları doldurun."); return; }
             newsList.unshift({ id: Date.now(), baslik, tarih_format, metin });
-            alert("Yeni haber başarıyla kuyruğun başına eklendi ve portalda aktifleşti!");
             switchAdminTab('news');
         }
 
         function deleteNewsCMS(index) {
-            if(!confirm("Bu haberi yayından kaldırmak istediğinize emin misiniz?")) return;
+            if(!confirm("Emin misiniz?")) return;
             newsList.splice(index, 1);
             switchAdminTab('news');
         }
 
         // ==========================================
-        // SAĞ ÜYE BİLGLENDİRME SİSTEMİ YÖNETİM MODÜLÜ
+        // ÜYE BİLGİLENDİRME (KARE 80x80 RESİZELİ UPLOAD)
         // ==========================================
         function getInfoSystemManagementTemplate() {
             return `
                 <div class="space-y-6">
                     <div class="border-b pb-4">
                         <h3 class="text-xl font-black text-[#1E3E28]">Üye Bilgilendirme Kartları Ayarları</h3>
-                        <p class="text-xs text-slate-400 font-semibold mt-0.5">Giriş sayfasının sağ panelindeki 5 adet görsel destekli bilgi alanını güncelleyin.</p>
+                        <p class="text-xs text-slate-400 font-semibold mt-0.5">Sağ paneldeki 5 kartı yönetin. Yüklenen resimler otomatik kare formatına (80x80) resize edilir.</p>
                     </div>
                     <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
                         ${infoList.map((info, idx) => `
                             <div class="p-4 border rounded-2xl bg-slate-50/50 space-y-3 shadow-sm text-xs font-medium">
-                                <span class="font-black text-slate-700 block"><i class="fa-solid fa-square-info text-emerald-700 mr-1"></i> Kart Bilgisi #${idx + 1}</span>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div>
-                                        <label class="block text-slate-500 font-bold mb-1">Kart Başlığı</label>
-                                        <input type="text" id="info-title-${idx}" value="${info.baslik}" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                                <span class="font-black text-slate-700 block"><i class="fa-solid fa-square-info text-emerald-700 mr-1"></i> Bilgi Penceresi #${idx + 1}</span>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-slate-500 font-bold mb-1">Kart Başlığı</label>
+                                            <input type="text" id="info-title-${idx}" value="${info.baslik}" class="w-full p-2.5 border rounded-xl focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-500 font-bold mb-1">İkon/Resim Seç (Browse)</label>
+                                            <input type="file" accept="image/*" onchange="processImageUpload(this, 80, 80, (b64) => { infoList[${idx}].img = b64; document.getElementById('preview-info-${idx}').src = b64; })" class="w-full p-1.5 border rounded-xl bg-white text-xs">
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="block text-slate-500 font-bold mb-1">Küçük Resim Linki (İkon/Görsel URL)</label>
-                                        <input type="text" id="info-img-${idx}" value="${info.img}" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">
+                                    <div class="flex flex-col justify-center items-center bg-white p-2 rounded-2xl border w-28 h-28 mx-auto">
+                                        <span class="text-[8px] uppercase font-bold text-slate-400 mb-1">Ön İzleme (80x80)</span>
+                                        <img id="preview-info-${idx}" src="${info.img}" class="w-16 h-16 object-cover rounded-xl border shadow-inner">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-slate-500 font-bold mb-1">Açıklama Metni</label>
-                                    <textarea id="info-desc-${idx}" rows="2" class="w-full p-2.5 border rounded-xl focus:ring-2 focus:ring-[#1E3E28] focus:outline-none">${info.metin}</textarea>
+                                    <textarea id="info-desc-${idx}" rows="2" class="w-full p-2.5 border rounded-xl focus:outline-none">${info.metin}</textarea>
                                 </div>
                             </div>
                         `).join('')}
                     </div>
-                    <button onclick="saveInfoSystemCMS()" class="bg-[#1E3E28] hover:bg-[#142a1b] text-white px-5 py-3 rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-2"><i class="fa-solid fa-floppy-disk"></i> <span>Kart Bilgilerini Kaydet ve Güncelle</span></button>
+                    <button onclick="saveInfoSystemCMS()" class="bg-[#1E3E28] hover:bg-[#142a1b] text-white px-5 py-3 rounded-xl font-bold text-xs shadow-md transition flex items-center space-x-2"><i class="fa-solid fa-floppy-disk"></i> <span>Tüm Kartları Kaydet ve Güncelle</span></button>
                 </div>
             `;
         }
@@ -501,20 +529,19 @@
         function saveInfoSystemCMS() {
             infoList.forEach((info, idx) => {
                 info.baslik = document.getElementById(`info-title-${idx}`).value.trim();
-                info.img = document.getElementById(`info-img-${idx}`).value.trim();
                 info.metin = document.getElementById(`info-desc-${idx}`).value.trim();
             });
-            alert("Üye bilgilendirme kartları başarıyla güncellendi!");
+            alert("Üye bilgilendirme sistemi başarıyla güncellendi!");
             renderPage();
         }
 
-        // GRUD AUTH/ADMIN REKORD BAGLANTILARI
+        // DEĞİŞMEYEN GÜVENLİ AUTH ALTYAPISI
         function openAuthModal(type) {
             const modal = document.getElementById('auth-modal'); const content = document.getElementById('modal-form-content'); modal.classList.remove('hidden');
             if (type === 'login') {
                 content.innerHTML = `<div class="space-y-5"><div class="text-center"><h3 class="text-xl font-extrabold text-[#1E3E28]">Üye Girişi</h3></div><div id="login-error" class="hidden p-3 bg-rose-50 text-rose-700 text-xs rounded-xl font-medium"><span></span></div><div class="space-y-4"><input type="text" id="login-phone" placeholder="Telefon Numarası" class="w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm font-medium"><input type="password" id="login-pass" placeholder="Şifre" class="w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm font-medium"><button onclick="handleLogin()" class="w-full bg-[#1E3E28] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition">Oturum Aç</button></div></div>`;
             } else {
-                content.innerHTML = `<div class="space-y-4"><div class="text-center"><h3 class="text-xl font-extrabold text-[#1E3E28]">Yeni Üye Başvurusu</h3></div><div id="reg-error" class="hidden p-3 bg-rose-50 text-rose-700 text-xs rounded-xl font-medium"><span></span></div><div id="reg-success" class="hidden p-3 bg-emerald-50 text-emerald-700 text-xs rounded-xl font-medium"><span></span></div><div id="register-form" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1"><div class="grid grid-cols-2 gap-2"><input type="text" id="reg-ad" placeholder="Adınız" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><input type="text" id="reg-soyad" placeholder="Soyadınız" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"></div><div class="grid grid-cols-2 gap-2"><input type="text" id="reg-baba" placeholder="Baba Adı" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><input type="text" id="reg-anne" placeholder="Anne Adı" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"></div><input type="date" id="reg-dogum" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><input type="text" id="reg-phone" placeholder="Telefon Numarası" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><input type="password" id="reg-pass" placeholder="Şifre Belirleyin" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><button onclick="handleRegister()" class="w-full bg-[#1E3E28] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition">Başvuruyu Tamamla</button></div></div>`;
+                content.innerHTML = `<div class="space-y-4"><div class="text-center"><h3 class="text-xl font-extrabold text-[#1E3E28]">Yeni Üye Başvurusu</h3></div><div id="reg-error" class="hidden p-3 bg-rose-50 text-rose-700 text-xs rounded-xl font-medium"><span></span></div><div id="reg-success" class="hidden p-3 bg-emerald-50 text-emerald-700 text-xs rounded-xl font-medium"><span></span></div><div id="register-form" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1"><div class="grid grid-cols-2 gap-2"><input type="text" id="reg-ad" placeholder="Adınız" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><input type="text" id="reg-soyad" placeholder="Soyadınız" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"></div><div class="grid grid-cols-2 gap-2"><input type="text" id="reg-baba" placeholder="Baba Adı" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><input type="text" id="reg-anne" placeholder="Anne Adı" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"></div><input type="date" id="reg-dogum" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><input type="text" id="reg-phone" placeholder="Telefon Numarası" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><input type="password" id="reg-pass" placeholder="Şifre" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-medium"><button onclick="handleRegister()" class="w-full bg-[#1E3E28] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition">Başvuruyu Tamamla</button></div></div>`;
             }
         }
         function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
@@ -525,14 +552,14 @@
         }
         async function handleRegister() {
             const ad = document.getElementById('reg-ad').value.trim(); const soyad = document.getElementById('reg-soyad').value.trim(); const baba_adi = document.getElementById('reg-baba').value.trim(); const anne_adi = document.getElementById('reg-anne').value.trim(); const dogum_tarihi = document.getElementById('reg-dogum').value; const telefon = document.getElementById('reg-phone').value.trim(); const sifre = document.getElementById('reg-pass').value.trim(); const errorDiv = document.getElementById('reg-error'); const successDiv = document.getElementById('reg-success');
-            try { const res = await fetch(`${API_URL}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ad, soyad, baba_adi, anne_adi, dogum_tarihi, telefon, sifre }) }); const data = await res.json(); if(res.ok) { errorDiv.classList.add('hidden'); successDiv.querySelector('span').innerText = data.message; successDiv.classList.remove('hidden'); document.getElementById('register-form').classList.add('hidden'); setTimeout(() => { closeAuthModal(); }, 2500); } else { showBoxError(errorDiv, data.message); } } catch (err) { showBoxError(errorDiv, "Hata oluştu."); }
+            try { const res = await fetch(`${API_URL}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ad, soyad, baba_adi, anne_adi, dogum_tarihi, telefon, sifre }) }); const data = await res.json(); if(res.ok) { errorDiv.classList.add('hidden'); successDiv.querySelector('span').innerText = data.message; successDiv.classList.remove('hidden'); document.getElementById('register-form').classList.add('hidden'); setTimeout(() => { closeAuthModal(); }, 2500); } else { showBoxError(errorDiv, data.message); } } catch (err) { showBoxError(errorDiv, "Hata."); }
         }
         function showBoxError(divElement, text) { divElement.querySelector('span').innerText = text; divElement.classList.remove('hidden'); }
-        function handleLogout() { localStorage.clear(); userToken = null; userRole = null; currentAdminTab = 'analytics'; handleLogoClick(); }
+        function handleLogout() { localStorage.clear(); userToken = null; userRole = null; switchAdminTab('analytics'); handleLogoClick(); }
 
-        async function loadAdminData() { const token = localStorage.getItem('userToken'); try { const res = await fetch(`${API_URL}/admin/users?durum=onay_bekliyor`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); const container = document.getElementById('admin-table-body'); if(!container) return; if(data.length===0 || !res.ok){ container.innerHTML=`<div class="text-center py-6 text-xs text-slate-400 font-bold"><i class="fa-solid fa-folder-open text-base block mb-2"></i> Onay sırasında yeni bir üyelik başvurusu bulunmuyor.</div>`; return; } container.innerHTML = data.map(u => `<div class="p-3 bg-slate-50 border rounded-xl flex justify-between items-center text-xs font-semibold"><span>${u.ad} ${u.soyad} (${u.telefon})</span><button onclick="approveUser(${u.id})" class="bg-[#1E3E28] text-white px-3 py-1.5 rounded-lg transition hover:bg-[#142a1b]">Onayla</button></div>`).join(''); } catch(e){} }
+        async function loadAdminData() { const token = localStorage.getItem('userToken'); try { const res = await fetch(`${API_URL}/admin/users?durum=onay_bekliyor`, { headers: { 'Authorization': `Bearer ${token}` } }); const data = await res.json(); const container = document.getElementById('admin-table-body'); if(!container) return; if(data.length===0 || !res.ok){ container.innerHTML=`<div class="text-center py-6 text-xs text-slate-400 font-bold"><i class="fa-solid fa-folder-open text-base block mb-2"></i> Bekleyen üyelik başvurusu bulunmuyor.</div>`; return; } container.innerHTML = data.map(u => `<div class="p-3 bg-slate-50 border rounded-xl flex justify-between items-center text-xs font-semibold"><span>${u.ad} ${u.soyad} (${u.telefon})</span><button onclick="approveUser(${u.id})" class="bg-[#1E3E28] text-white px-3 py-1.5 rounded-lg transition hover:bg-[#142a1b]">Onayla</button></div>`).join(''); } catch(e){} }
         async function approveUser(id) { const token = localStorage.getItem('userToken'); try { const res = await fetch(`${API_URL}/admin/users/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ yeniDurum: 'aktif' }) }); if(res.ok) loadAdminData(); } catch(e){} }
-        function getProfileTemplate() { return `<div class="bg-white p-8 rounded-3xl border border-slate-200 text-center space-y-4 max-w-md mx-auto shadow-sm"><div class="w-16 h-16 bg-emerald-50 text-[#1E3E28] rounded-full flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-circle-check"></i></div><h2 class="text-xl font-extrabold text-slate-800">Giriş Başarılı!</h2><p class="text-xs text-slate-500 font-medium leading-relaxed">Dernek kütüğü profiliniz aktiftir. Çok yakında köy haritası özellikleri bu panel üzerinden hizmete açılacaktır.</p><button onclick="handleLogout()" class="bg-[#1E3E28] text-white px-5 py-2.5 rounded-xl font-bold text-xs tracking-wide shadow transition hover:bg-[#142a1b]">Oturumu Kapat</button></div>`; }
+        function getProfileTemplate() { return `<div class="bg-white p-8 rounded-3xl border text-center space-y-4 max-w-md mx-auto shadow-sm"><div class="w-16 h-16 bg-emerald-50 text-[#1E3E28] rounded-full flex items-center justify-center text-2xl mx-auto"><i class="fa-solid fa-circle-check"></i></div><h2 class="text-xl font-extrabold text-slate-800">Giriş Başarılı!</h2><p class="text-xs text-slate-500 font-medium leading-relaxed">Dernek kütüğü profiliniz aktiftir. Çok yakında köy haritası özellikleri bu panel üzerinden hizmete açılacaktır.</p><button onclick="handleLogout()" class="bg-[#1E3E28] text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow transition hover:bg-[#142a1b]">Oturumu Kapat</button></div>`; }
 
         initPage();
     </script>
